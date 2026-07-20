@@ -1,0 +1,20 @@
+:root {
+  --bg: #edf3f8;
+  --panel: rgba(255, 255, 255, 0.92);
+  --panel-strong: #ffffff;
+  --ink: #18324a;
+  --muted: #5c7284;
+  --line: #c9d8e4;
+  --accent: #0f6c81;
+  --accent-strong: #0b5161;
+  --accent-soft: #d7edf1;
+  --success: #2f7d4a;
+  --warning: #af6a00;
+  --shadow: 0 18px 40px rgba(14, 47, 74, 0.12);
+  --radius-lg: 22px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+  --content-width: 1380px;
+  --font-sans: "Avenir Next", "Segoe UI", sans-serif;
+  --font-display: "Helvetica Neue", "Avenir Next", sans-serif;
+}

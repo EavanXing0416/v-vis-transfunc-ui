@@ -1,0 +1,58 @@
+import type { DatasetRecord } from '../features/datasets/dataset.types';
+
+export const mockDatasets: DatasetRecord[] = [
+  {
+    id: 'VD00078190',
+    name: 'WindFarmA',
+    type: 'physical',
+    source: 'Farm A',
+    modality: 'sensor statistics',
+    keywordCount: 28,
+    metadataSummary: '95 events, 3 labels, 59 columns',
+  },
+  {
+    id: 'VD00078191',
+    name: 'WindFarmB',
+    type: 'physical',
+    source: 'Farm B',
+    modality: 'sensor statistics',
+    keywordCount: 31,
+    metadataSummary: '88 events, 3 labels, 57 columns',
+  },
+  {
+    id: 'VD00078192',
+    name: 'WindFarmC',
+    type: 'physical',
+    source: 'Farm C',
+    modality: 'sensor statistics',
+    keywordCount: 29,
+    metadataSummary: '91 events, 3 labels, 60 columns',
+  },
+  {
+    id: 'VD00078216',
+    name: 'WindFarmsABC',
+    type: 'virtual',
+    source: 'Cross-farm merge',
+    modality: 'sensor statistics',
+    keywordCount: 49,
+    metadataSummary: 'Merged A/B/C with common-column selection',
+  },
+  {
+    id: 'VD00078240',
+    name: 'WindFarmA-Filtered',
+    type: 'virtual',
+    source: 'Farm A',
+    modality: 'filtered time slices',
+    keywordCount: 18,
+    metadataSummary: 'Time-window subset prepared for anomaly study',
+  },
+  {
+    id: 'VD00078261',
+    name: 'WindFarmB-Labeled',
+    type: 'virtual',
+    source: 'Farm B',
+    modality: 'sensor plus labels',
+    keywordCount: 21,
+    metadataSummary: 'Aligned label columns for supervised learning',
+  },
+];
