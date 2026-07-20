@@ -31,13 +31,31 @@ export function ReviewSummary({ datasets, form }: ReviewSummaryProps) {
         <dt>Shuffle</dt>
         <dd>{form.shuffle ? 'Yes' : 'No'}</dd>
       </div>
+      {form.strategy === 'stratified_split' ? (
+        <div className="summary-list__row">
+          <dt>Stratify by</dt>
+          <dd>{form.stratifyBy}</dd>
+        </div>
+      ) : null}
+      {form.strategy === 'time_based_split' ? (
+        <>
+          <div className="summary-list__row">
+            <dt>Time field</dt>
+            <dd>{form.timeField}</dd>
+          </div>
+          <div className="summary-list__row">
+            <dt>Temporal order</dt>
+            <dd>{form.keepTemporalOrder ? 'Preserved' : 'Can be relaxed'}</dd>
+          </div>
+        </>
+      ) : null}
       <div className="summary-list__row">
         <dt>Random seed</dt>
         <dd>{form.randomSeed}</dd>
       </div>
-      <div className="summary-list__row">
+      <div className="summary-list__row summary-list__row--wrap">
         <dt>Comment summary</dt>
-        <dd>{form.commentSummary || 'Not added yet'}</dd>
+        <dd className="summary-list__value summary-list__value--wrap">{form.commentSummary || 'Not added yet'}</dd>
       </div>
     </dl>
   );

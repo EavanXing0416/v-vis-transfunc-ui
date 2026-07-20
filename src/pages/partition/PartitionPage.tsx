@@ -28,28 +28,28 @@ export function PartitionPage() {
   const [form, setForm] = useState(defaultPartitionForm);
   const [showDatasets, setShowDatasets] = useState(false);
   const [commitNote, setCommitNote] = useState('');
+  const [lastCommittedFile, setLastCommittedFile] = useState('');
 
   const validationMessage = useMemo(() => getPartitionValidationMessage(form), [form]);
 
   function handleCommit() {
     const payload = buildPartitionPayload(selectedDatasets, form);
-    downloadJson(`${payload.transformation_id}-partition.json`, payload);
-    setCommitNote(
-      'Internal transformation record generated and downloaded. The JSON stays out of the editing UI, but is ready for later service integration.',
-    );
+    const filename = `${payload.transformation_id}-partition.json`;
+    downloadJson(filename, payload);
+    setLastCommittedFile(filename);
+    setCommitNote('Transformation committed successfully.');
   }
 
   return (
     <main className="app-shell">
       <PageHeader
-        eyebrow="Level 2 UI"
-        title="Partition Editing Page"
-        description="This secondary page inherits selected datasets from the search engine and focuses on transformation-specific editing."
+        title="Partition Configuration"
+        description="Review input datasets, set partition parameters, and commit the transformation record."
         meta={
-          <div className="stack">
-            <strong>{selectedDatasets.length} inherited input datasets</strong>
+          <div className="stack--tight">
+            <strong>{selectedDatasets.length} input datasets</strong>
             <Link className="button button--ghost" to={routes.search}>
-              Back to search results
+              Back to search
             </Link>
           </div>
         }
@@ -57,70 +57,69 @@ export function PartitionPage() {
 
       <section className="grid grid--editor">
         <div className="panel">
-          <div className="panel__section">
+          <div className="panel__section panel__section--compact">
             <div className="section-title">
               <h2>Input Datasets</h2>
-              <button
-                className="button button--secondary"
-                onClick={() => setShowDatasets((current) => !current)}
-                type="button"
-              >
-                {showDatasets ? 'Hide full list' : 'View full dataset list'}
+              <button className="button button--secondary" onClick={() => setShowDatasets((current) => !current)} type="button">
+                {showDatasets ? 'Hide list' : 'View list'}
               </button>
             </div>
             <InputDatasetSummary datasets={selectedDatasets} />
             {showDatasets ? (
-              <div style={{ marginTop: '18px' }}>
-                <CompactDatasetTable datasets={selectedDatasets} />
+              <div style={{ marginTop: '10px' }}>
+                <CompactDatasetTable compact datasets={selectedDatasets} maxHeightClassName="dataset-table-wrap--capped" />
               </div>
             ) : null}
           </div>
 
-          <div className="panel__section">
+          <div className="panel__section panel__section--compact">
             <div className="section-title">
               <h2>Partition Parameters</h2>
             </div>
             <PartitionForm form={form} onChange={setForm} />
           </div>
 
-          <div className="panel__section">
+          <div className="panel__section panel__section--compact">
             <div className="section-title">
-              <h2>Transformation Comments</h2>
+              <h2>Comments</h2>
             </div>
             <CommentEditor form={form} onChange={setForm} />
           </div>
         </div>
 
         <aside className="panel">
-          <div className="panel__section">
+          <div className="panel__section panel__section--compact">
             <div className="section-title">
               <h2>Review Summary</h2>
             </div>
             <ReviewSummary datasets={selectedDatasets} form={form} />
           </div>
 
-          <div className="panel__section">
+          <div className="panel__section panel__section--compact">
             <div className="section-title">
-              <h3>Commit Transformation</h3>
+              <h3>Commit</h3>
             </div>
-            <p className="muted">
-              Users do not need to inspect the JSON directly. Committing this configuration generates an internal transformation record for later connection to the real service.
-            </p>
-            {validationMessage ? <p style={{ color: 'var(--warning)', marginTop: 0 }}>{validationMessage}</p> : null}
-            <div className="action-row">
-              <button
-                className="button button--primary"
-                disabled={Boolean(validationMessage)}
-                onClick={handleCommit}
-                type="button"
-              >
-                Commit Transformation
+            <p className="partition-note">Commit generates the internal transformation record for later service integration.</p>
+            {validationMessage ? <p style={{ color: 'var(--warning)', margin: '4px 0 0' }}>{validationMessage}</p> : null}
+            <div className="action-row" style={{ marginTop: '8px' }}>
+              <button className="button button--primary" disabled={Boolean(validationMessage)} onClick={handleCommit} type="button">
+                Commit
               </button>
               <Link className="button button--secondary" to={routes.search}>
                 Cancel
               </Link>
             </div>
-            {commitNote ? <p className="status-note">{commitNote}</p> : null}
+            {commitNote ? (
+              <div className="success-banner" role="status">
+                <strong>{commitNote}</strong>
+                <span className="muted">Generated file: {lastCommittedFile}</span>
+                <div className="action-row">
+                  <Link className="button button--secondary" to={routes.search}>
+                    Return to Search
+                  </Link>
+                </div>
+              </div>
+            ) : null}
           </div>
         </aside>
       </section>

@@ -7,6 +7,9 @@ export const defaultPartitionForm: PartitionFormState = {
   testRatio: 0.15,
   shuffle: true,
   randomSeed: 42,
+  stratifyBy: 'label',
+  timeField: 'time_stamp',
+  keepTemporalOrder: true,
   commentSummary: '',
   commentDetails: '',
 };

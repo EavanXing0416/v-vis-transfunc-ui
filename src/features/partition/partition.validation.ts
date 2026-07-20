@@ -11,6 +11,14 @@ export function getPartitionValidationMessage(form: PartitionFormState) {
     return 'Random seed must be an integer.';
   }
 
+  if (form.strategy === 'stratified_split' && !form.stratifyBy.trim()) {
+    return 'Please specify which field should be used for stratified splitting.';
+  }
+
+  if (form.strategy === 'time_based_split' && !form.timeField.trim()) {
+    return 'Please specify the time field for time-based splitting.';
+  }
+
   if (!form.commentSummary.trim()) {
     return 'Please add a short summary before committing the transformation.';
   }

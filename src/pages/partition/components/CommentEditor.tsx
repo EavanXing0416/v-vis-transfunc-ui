@@ -5,6 +5,8 @@ interface CommentEditorProps {
   onChange: (nextForm: PartitionFormState) => void;
 }
 
+const MAX_SUMMARY_LENGTH = 120;
+
 export function CommentEditor({ form, onChange }: CommentEditorProps) {
   function update<K extends keyof PartitionFormState>(key: K, value: PartitionFormState[K]) {
     onChange({
@@ -14,15 +16,19 @@ export function CommentEditor({ form, onChange }: CommentEditorProps) {
   }
 
   return (
-    <div className="stack">
+    <div className="stack--tight">
       <div className="field">
         <label htmlFor="comment-summary">Comment summary</label>
         <input
           id="comment-summary"
+          maxLength={MAX_SUMMARY_LENGTH}
           onChange={(event) => update('commentSummary', event.target.value)}
-          placeholder="Example: Baseline split for initial training"
+          placeholder="Baseline split for initial training"
           value={form.commentSummary}
         />
+        <span className="field-hint field-hint--meta">
+          {form.commentSummary.length}/{MAX_SUMMARY_LENGTH} characters
+        </span>
       </div>
 
       <div className="field">

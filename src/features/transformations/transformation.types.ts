@@ -25,6 +25,9 @@ export interface PartitionTransformationRecord {
     test_ratio: number;
     shuffle: boolean;
     random_seed: number;
+    stratify_by?: string;
+    time_field?: string;
+    keep_temporal_order?: boolean;
   };
   comments: TransformationComments;
   derived_datasets: DerivedDatasetDraft[];

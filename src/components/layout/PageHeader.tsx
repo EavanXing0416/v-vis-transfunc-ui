@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 interface PageHeaderProps {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description: string;
   meta?: ReactNode;
@@ -11,7 +11,7 @@ export function PageHeader({ eyebrow, title, description, meta }: PageHeaderProp
   return (
     <header className="page-hero">
       <div className="page-hero__copy">
-        <p className="eyebrow">{eyebrow}</p>
+        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
         <h1>{title}</h1>
         <p>{description}</p>
       </div>

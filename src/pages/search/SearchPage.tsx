@@ -7,6 +7,40 @@ import { summarizeDatasetSelection } from '../../features/datasets/datasetSummar
 import { routes } from '../../lib/routes';
 import { loadDatasets } from '../../services/searchService';
 
+const transformationFunctions = [
+  {
+    name: 'Partition',
+    description: 'Split selected datasets into train, validation, and test outputs.',
+    enabled: true,
+    action: routes.partition,
+  },
+  {
+    name: 'Merge & Select',
+    description: 'Combine multiple datasets and define shared feature selection rules.',
+    enabled: false,
+  },
+  {
+    name: 'Filter',
+    description: 'Apply row-level constraints or keep targeted event windows.',
+    enabled: false,
+  },
+  {
+    name: 'Sample',
+    description: 'Create smaller representative subsets for faster experiments.',
+    enabled: false,
+  },
+  {
+    name: 'Normalize',
+    description: 'Prepare aligned scales and standard preprocessing defaults.',
+    enabled: false,
+  },
+  {
+    name: 'Annotate',
+    description: 'Attach derived labels or metadata fields to the selected inputs.',
+    enabled: false,
+  },
+];
+
 export function SearchPage() {
   const navigate = useNavigate();
   const [datasets, setDatasets] = useState<DatasetRecord[]>([]);
@@ -55,18 +89,21 @@ export function SearchPage() {
     });
   }
 
+  function handleTransformationClick(route?: string) {
+    if (route === routes.partition) {
+      handlePartition();
+    }
+  }
+
   return (
     <main className="app-shell">
       <PageHeader
-        eyebrow="Level 1 UI"
-        title="Dataset Searching Engine"
-        description="Search, scan, and select large batches of datasets before opening a transformation-specific editing page."
+        title="Dataset Search"
+        description="Search, scan, and select input datasets before opening a transformation editing page."
         meta={
-          <div className="stack">
-            <strong>{filteredDatasets.length} datasets in current results</strong>
-            <span className="muted">
-              Keep this page dense and scan-friendly. Transformation editing happens in the next page.
-            </span>
+          <div className="search-meta">
+            <strong>{filteredDatasets.length}</strong>
+            <span className="muted">datasets in current results</span>
           </div>
         }
       />
@@ -76,10 +113,10 @@ export function SearchPage() {
           <div className="panel__section">
             <div className="section-title">
               <h2>Search Results</h2>
-              <span className="muted">Compact table layout for high-volume discovery</span>
+              <span className="muted">Showing up to 20 visible rows</span>
             </div>
 
-            <div className="field" style={{ marginBottom: '16px' }}>
+            <div className="field" style={{ marginBottom: '14px' }}>
               <label htmlFor="dataset-search">Search datasets</label>
               <input
                 id="dataset-search"
@@ -90,7 +127,9 @@ export function SearchPage() {
             </div>
 
             <CompactDatasetTable
+              compact
               datasets={filteredDatasets}
+              maxHeightClassName="dataset-table-wrap--capped"
               onToggle={handleToggle}
               selectable
               selectedIds={selectedIds}
@@ -99,13 +138,13 @@ export function SearchPage() {
         </div>
 
         <aside className="panel">
-          <div className="panel__section">
+          <div className="panel__section panel__section--compact">
             <div className="section-title">
               <h2>Selection Summary</h2>
             </div>
-            <dl className="summary-list">
+            <dl className="summary-list summary-list--compact">
               <div className="summary-list__row">
-                <dt>Selected datasets</dt>
+                <dt>Selected</dt>
                 <dd>{summary.total}</dd>
               </div>
               <div className="summary-list__row">
@@ -127,21 +166,19 @@ export function SearchPage() {
             <div className="section-title">
               <h3>Transformation Functions</h3>
             </div>
-            <p className="muted">
-              Clicking one of these buttons opens a separate editing page that inherits the currently selected input datasets.
-            </p>
-            <div className="action-row">
-              <button
-                className="button button--primary"
-                disabled={selectedDatasets.length === 0}
-                onClick={handlePartition}
-                type="button"
-              >
-                Partition
-              </button>
-              <button className="button button--secondary" disabled type="button">
-                Merge &amp; Select
-              </button>
+            <div className="function-grid">
+              {transformationFunctions.map((item) => (
+                <button
+                  key={item.name}
+                  className={`function-card ${item.enabled ? 'button button--secondary' : 'button button--secondary'}`}
+                  disabled={!item.enabled || selectedDatasets.length === 0}
+                  onClick={() => handleTransformationClick(item.action)}
+                  type="button"
+                >
+                  <strong>{item.name}</strong>
+                  <span>{item.description}</span>
+                </button>
+              ))}
             </div>
           </div>
         </aside>

@@ -9,11 +9,11 @@ export function InputDatasetSummary({ datasets }: InputDatasetSummaryProps) {
   const summary = summarizeDatasetSelection(datasets);
 
   return (
-    <div className="stack">
+    <div className="stack--tight">
       <div className="banner">
         <strong>{summary.total} input datasets selected</strong>
         <p className="muted" style={{ marginBottom: 0 }}>
-          This editing page focuses on the transformation parameters. The datasets themselves were chosen in the level 1 search page.
+          Selected in the search page and processed by this partition configuration.
         </p>
       </div>
 
@@ -23,7 +23,7 @@ export function InputDatasetSummary({ datasets }: InputDatasetSummaryProps) {
         <span className="meta-pill">Sources: {summary.sources.join(', ')}</span>
       </div>
 
-      <p className="muted" style={{ margin: 0 }}>
+      <p className="partition-note">
         Preview: {summary.previewNames.join(', ')}
         {datasets.length > summary.previewNames.length ? ', ...' : ''}
       </p>

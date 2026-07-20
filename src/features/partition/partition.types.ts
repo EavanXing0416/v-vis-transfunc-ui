@@ -5,6 +5,9 @@ export interface PartitionFormState {
   testRatio: number;
   shuffle: boolean;
   randomSeed: number;
+  stratifyBy: string;
+  timeField: string;
+  keepTemporalOrder: boolean;
   commentSummary: string;
   commentDetails: string;
 }

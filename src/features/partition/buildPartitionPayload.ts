@@ -24,6 +24,9 @@ export function buildPartitionPayload(
       test_ratio: form.testRatio,
       shuffle: form.shuffle,
       random_seed: form.randomSeed,
+      stratify_by: form.strategy === 'stratified_split' ? form.stratifyBy : undefined,
+      time_field: form.strategy === 'time_based_split' ? form.timeField : undefined,
+      keep_temporal_order: form.strategy === 'time_based_split' ? form.keepTemporalOrder : undefined,
     },
     comments: {
       summary: form.commentSummary,
