@@ -10,6 +10,7 @@ export interface TransformationComments {
 export interface DerivedDatasetDraft {
   role: 'train' | 'validation' | 'test';
   assigned_id: string | null;
+  parent_id: string;
 }
 
 export interface PartitionTransformationRecord {
@@ -30,5 +31,6 @@ export interface PartitionTransformationRecord {
     keep_temporal_order?: boolean;
   };
   comments: TransformationComments;
+  derived_dataset_count: number;
   derived_datasets: DerivedDatasetDraft[];
 }

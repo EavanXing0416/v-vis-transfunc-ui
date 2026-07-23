@@ -10,33 +10,38 @@ import { loadDatasets } from '../../services/searchService';
 const transformationFunctions = [
   {
     name: 'Partition',
-    description: 'Split selected datasets into train, validation, and test outputs.',
+    description: 'Create train, validation, and test splits.',
     enabled: true,
     action: routes.partition,
   },
   {
-    name: 'Merge & Select',
-    description: 'Combine multiple datasets and define shared feature selection rules.',
+    name: 'Merge',
+    description: 'Combine similar datasets into one merged dataset.',
     enabled: false,
   },
   {
-    name: 'Filter',
-    description: 'Apply row-level constraints or keep targeted event windows.',
+    name: 'Integration',
+    description: 'Fuse heterogeneous datasets into one integrated dataset.',
     enabled: false,
   },
   {
-    name: 'Sample',
-    description: 'Create smaller representative subsets for faster experiments.',
+    name: 'Selection',
+    description: 'Select variables or labels for focused downstream datasets.',
     enabled: false,
   },
   {
-    name: 'Normalize',
-    description: 'Prepare aligned scales and standard preprocessing defaults.',
+    name: 'Normalization',
+    description: 'Convert data into a model-ready normalized format.',
     enabled: false,
   },
   {
-    name: 'Annotate',
-    description: 'Attach derived labels or metadata fields to the selected inputs.',
+    name: 'Reorganization',
+    description: 'Restructure data for a target machine learning method.',
+    enabled: false,
+  },
+  {
+    name: 'Feature Extraction',
+    description: 'Transform raw data into feature representations.',
     enabled: false,
   },
 ];
@@ -59,7 +64,7 @@ export function SearchPage() {
     }
 
     return datasets.filter((dataset) =>
-      [dataset.id, dataset.name, dataset.source, dataset.metadataSummary, dataset.modality]
+      [dataset.id, dataset.name, dataset.type, dataset.source, dataset.metadataSummary, dataset.modality]
         .join(' ')
         .toLowerCase()
         .includes(normalizedQuery),
@@ -72,6 +77,7 @@ export function SearchPage() {
   );
 
   const summary = summarizeDatasetSelection(selectedDatasets);
+  const allFilteredSelected = filteredDatasets.length > 0 && filteredDatasets.every((dataset) => selectedIds.includes(dataset.id));
 
   function handleToggle(datasetId: string) {
     setSelectedIds((current) =>
@@ -79,6 +85,14 @@ export function SearchPage() {
         ? current.filter((id) => id !== datasetId)
         : [...current, datasetId],
     );
+  }
+
+  function handleSelectAllResults() {
+    setSelectedIds((current) => Array.from(new Set([...current, ...filteredDatasets.map((dataset) => dataset.id)])));
+  }
+
+  function handleClearSelection() {
+    setSelectedIds([]);
   }
 
   function handlePartition() {
@@ -116,14 +130,33 @@ export function SearchPage() {
               <span className="muted">Showing up to 20 visible rows</span>
             </div>
 
-            <div className="field" style={{ marginBottom: '14px' }}>
+            <div className="field" style={{ marginBottom: '10px' }}>
               <label htmlFor="dataset-search">Search datasets</label>
               <input
                 id="dataset-search"
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search by dataset ID, name, source, or metadata"
+                placeholder="Search by dataset ID, name, type, source, or metadata"
                 value={query}
               />
+            </div>
+
+            <div className="action-row" style={{ marginBottom: '10px' }}>
+              <button
+                className="button button--secondary"
+                disabled={filteredDatasets.length === 0 || allFilteredSelected}
+                onClick={handleSelectAllResults}
+                type="button"
+              >
+                Select all results
+              </button>
+              <button
+                className="button button--secondary"
+                disabled={selectedIds.length === 0}
+                onClick={handleClearSelection}
+                type="button"
+              >
+                Clear selection
+              </button>
             </div>
 
             <CompactDatasetTable

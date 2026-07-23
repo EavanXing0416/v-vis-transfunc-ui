@@ -3,10 +3,20 @@ import { createTransformationId } from '../../lib/ids';
 import type { PartitionTransformationRecord } from '../transformations/transformation.types';
 import type { PartitionFormState } from './partition.types';
 
+const PARTITION_ROLES: Array<'train' | 'validation' | 'test'> = ['train', 'validation', 'test'];
+
 export function buildPartitionPayload(
   datasets: DatasetRecord[],
   form: PartitionFormState,
 ): PartitionTransformationRecord {
+  const derivedDatasets = datasets.flatMap((dataset) =>
+    PARTITION_ROLES.map((role) => ({
+      role,
+      assigned_id: null,
+      parent_id: dataset.id,
+    })),
+  );
+
   return {
     transformation_id: createTransformationId(),
     operation: 'Partition',
@@ -32,10 +42,7 @@ export function buildPartitionPayload(
       summary: form.commentSummary,
       details: form.commentDetails,
     },
-    derived_datasets: [
-      { role: 'train', assigned_id: null },
-      { role: 'validation', assigned_id: null },
-      { role: 'test', assigned_id: null },
-    ],
+    derived_dataset_count: derivedDatasets.length,
+    derived_datasets: derivedDatasets,
   };
 }
