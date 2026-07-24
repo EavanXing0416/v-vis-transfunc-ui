@@ -1,12 +1,16 @@
 import type { DatasetRecord } from '../../../features/datasets/dataset.types';
 import type { PartitionFormState } from '../../../features/partition/partition.types';
+import type { DerivedDatasetDraft } from '../../../features/transformations/transformation.types';
 
 interface ReviewSummaryProps {
   datasets: DatasetRecord[];
   form: PartitionFormState;
+  derivedDatasets: DerivedDatasetDraft[];
 }
 
-export function ReviewSummary({ datasets, form }: ReviewSummaryProps) {
+const COMMENT_PREVIEW_LIMIT = 120;
+
+export function ReviewSummary({ datasets, form, derivedDatasets }: ReviewSummaryProps) {
   return (
     <dl className="summary-list">
       <div className="summary-list__row">
@@ -18,58 +22,41 @@ export function ReviewSummary({ datasets, form }: ReviewSummaryProps) {
         <dd>{datasets.length}</dd>
       </div>
       <div className="summary-list__row">
-        <dt>Strategy</dt>
-        <dd>{labelForStrategy(form.strategy)}</dd>
+        <dt>Method</dt>
+        <dd>{form.method === 'random' ? 'Random' : 'Chunk'}</dd>
       </div>
       <div className="summary-list__row">
         <dt>Split ratio</dt>
-        <dd>
-          {form.trainRatio} / {form.validationRatio} / {form.testRatio}
-        </dd>
+        <dd>{form.trainRatio} / {form.validationRatio} / {form.testRatio}</dd>
       </div>
-      <div className="summary-list__row">
-        <dt>Shuffle</dt>
-        <dd>{form.shuffle ? 'Yes' : 'No'}</dd>
-      </div>
-      {form.strategy === 'stratified_split' ? (
+      {form.method === 'random' ? (
         <div className="summary-list__row">
-          <dt>Stratify by</dt>
-          <dd>{form.stratifyBy}</dd>
+          <dt>Random seed</dt>
+          <dd>{form.randomSeed}</dd>
         </div>
       ) : null}
-      {form.strategy === 'time_based_split' ? (
-        <>
-          <div className="summary-list__row">
-            <dt>Time field</dt>
-            <dd>{form.timeField}</dd>
-          </div>
-          <div className="summary-list__row">
-            <dt>Temporal order</dt>
-            <dd>{form.keepTemporalOrder ? 'Preserved' : 'Can be relaxed'}</dd>
-          </div>
-        </>
-      ) : null}
       <div className="summary-list__row">
-        <dt>Random seed</dt>
-        <dd>{form.randomSeed}</dd>
+        <dt>Derived datasets</dt>
+        <dd>{derivedDatasets.length}</dd>
       </div>
       <div className="summary-list__row summary-list__row--wrap">
-        <dt>Comment summary</dt>
-        <dd className="summary-list__value summary-list__value--wrap">{form.commentSummary || 'Not added yet'}</dd>
+        <dt>Comments</dt>
+        <dd className="summary-list__value summary-list__value--wrap">{formatCommentPreview(form.comments)}</dd>
       </div>
     </dl>
   );
 }
 
-function labelForStrategy(strategy: PartitionFormState['strategy']) {
-  switch (strategy) {
-    case 'random_split':
-      return 'Random split';
-    case 'stratified_split':
-      return 'Stratified split';
-    case 'time_based_split':
-      return 'Time-based split';
-    default:
-      return strategy;
+function formatCommentPreview(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return 'Not added yet';
   }
+
+  if (trimmed.length <= COMMENT_PREVIEW_LIMIT) {
+    return trimmed;
+  }
+
+  return `${trimmed.slice(0, COMMENT_PREVIEW_LIMIT).trimEnd()}...`;
 }

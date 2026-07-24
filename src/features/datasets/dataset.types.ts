@@ -7,5 +7,6 @@ export interface DatasetRecord {
   source: string;
   modality: string;
   keywordCount: number;
+  objectCount: number;
   metadataSummary: string;
 }

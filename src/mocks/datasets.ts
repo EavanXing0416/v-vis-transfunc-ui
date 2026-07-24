@@ -8,6 +8,7 @@ export const mockDatasets: DatasetRecord[] = [
     source: 'Farm A',
     modality: 'sensor statistics',
     keywordCount: 28,
+    objectCount: 100,
     metadataSummary: '95 events, 3 labels, 59 columns',
   },
   {
@@ -17,6 +18,7 @@ export const mockDatasets: DatasetRecord[] = [
     source: 'Farm B',
     modality: 'sensor statistics',
     keywordCount: 31,
+    objectCount: 100,
     metadataSummary: '88 events, 3 labels, 57 columns',
   },
   {
@@ -26,6 +28,7 @@ export const mockDatasets: DatasetRecord[] = [
     source: 'Farm C',
     modality: 'sensor statistics',
     keywordCount: 29,
+    objectCount: 100,
     metadataSummary: '91 events, 3 labels, 60 columns',
   },
   {
@@ -35,6 +38,7 @@ export const mockDatasets: DatasetRecord[] = [
     source: 'Wave A',
     modality: 'n.a.',
     keywordCount: 21,
+    objectCount: 100,
     metadataSummary: 'n.a.',
   },
   {
@@ -44,6 +48,7 @@ export const mockDatasets: DatasetRecord[] = [
     source: 'Wave B',
     modality: 'n.a.',
     keywordCount: 22,
+    objectCount: 100,
     metadataSummary: 'n.a.',
   },
   {
@@ -53,6 +58,7 @@ export const mockDatasets: DatasetRecord[] = [
     source: 'Wave C',
     modality: 'n.a.',
     keywordCount: 18,
+    objectCount: 100,
     metadataSummary: 'n.a.',
   },
   {
@@ -62,6 +68,7 @@ export const mockDatasets: DatasetRecord[] = [
     source: 'Cross-farm merge',
     modality: 'sensor statistics',
     keywordCount: 49,
+    objectCount: 100,
     metadataSummary: 'Merged A/B/C with common-column selection',
   },
   {
@@ -71,6 +78,7 @@ export const mockDatasets: DatasetRecord[] = [
     source: 'Farm A',
     modality: 'filtered time slices',
     keywordCount: 18,
+    objectCount: 100,
     metadataSummary: 'Time-window subset prepared for anomaly study',
   },
   {
@@ -80,6 +88,7 @@ export const mockDatasets: DatasetRecord[] = [
     source: 'Farm B',
     modality: 'sensor plus labels',
     keywordCount: 21,
+    objectCount: 100,
     metadataSummary: 'Aligned label columns for supervised learning',
   },
   {
@@ -89,24 +98,27 @@ export const mockDatasets: DatasetRecord[] = [
     source: 'Farm B',
     modality: 'sensor plus labels',
     keywordCount: 24,
+    objectCount: 100,
     metadataSummary: 'Patitioned-Training Set from Aligned label columns for supervised learning',
   },
-    {
+  {
     id: 'VD00078291',
     name: 'WindFarmB-Labeled-Test',
     type: 'virtual',
     source: 'Farm B',
     modality: 'sensor plus labels',
     keywordCount: 24,
+    objectCount: 100,
     metadataSummary: 'Patitioned-Testing Set from Aligned label columns for supervised learning',
   },
-    {
+  {
     id: 'VD00078292',
     name: 'WindFarmB-Labeled-Validate',
     type: 'virtual',
     source: 'Farm B',
     modality: 'sensor plus labels',
     keywordCount: 24,
+    objectCount: 100,
     metadataSummary: 'Patitioned-Validation Set from Aligned label columns for supervised learning',
   },
 ];
