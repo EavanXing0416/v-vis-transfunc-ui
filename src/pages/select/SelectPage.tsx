@@ -1,0 +1,281 @@
+import { useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { PageHeader } from '../../components/layout/PageHeader';
+import type { DatasetRecord } from '../../features/datasets/dataset.types';
+import { buildSelectPayload } from '../../features/select/buildSelectPayload';
+import { buildSelectReadmes } from '../../features/select/buildSelectReadmes';
+import { buildDefaultSelectForm } from '../../features/select/select.defaults';
+import { getSelectDraftValidationMessage, getSelectValidationMessage } from '../../features/select/select.validation';
+import type { SelectDatasetSchema, SelectFormState } from '../../features/select/select.types';
+import type { DerivedDatasetDraft } from '../../features/transformations/transformation.types';
+import { downloadText } from '../../lib/downloadText';
+import { routes } from '../../lib/routes';
+import { mockDatasets } from '../../mocks/datasets';
+import { getSelectSchema } from '../../mocks/selectSchemas';
+import { CommentEditor } from '../partition/components/CommentEditor';
+import { SelectForm } from './components/SelectForm';
+import { SelectReview } from './components/SelectReview';
+
+interface SelectLocationState {
+  selectedDatasets?: DatasetRecord[];
+}
+
+export function SelectPage() {
+  const location = useLocation();
+  const locationState = location.state as SelectLocationState | null;
+  const dataset = (locationState?.selectedDatasets?.[0] ?? mockDatasets[0]) as DatasetRecord;
+  const schema = useMemo(() => getSelectSchema(dataset), [dataset]);
+  const [form, setForm] = useState(() => buildDefaultSelectForm(dataset.name, schema));
+  const [commitNote, setCommitNote] = useState('');
+  const [generatedFiles, setGeneratedFiles] = useState<string[]>([]);
+
+  const outputStats = useMemo(() => deriveOutputStats(dataset, schema, form), [dataset, schema, form]);
+  const validationMessage = useMemo(() => getSelectValidationMessage(form), [form]);
+  const draftValidationMessage = useMemo(() => getSelectDraftValidationMessage(form.draftStep, schema), [form.draftStep, schema]);
+  const derivedDataset = useMemo<DerivedDatasetDraft>(
+    () => ({
+      role: 'selected',
+      draft_id: `DRV-${dataset.id}-sel`,
+      assigned_id: null,
+      parent_id: dataset.id,
+      name: form.outputName,
+      object_count: outputStats.objectCount,
+    }),
+    [dataset.id, form.outputName, outputStats.objectCount],
+  );
+
+  function handleFormChange(nextForm: SelectFormState) {
+    setForm(nextForm);
+  }
+
+  function handleOutputNameChange(value: string) {
+    setForm((current) => ({
+      ...current,
+      outputName: value,
+    }));
+  }
+
+  function handleCommit() {
+    const payload = buildSelectPayload(dataset, form, derivedDataset);
+    const readmes = buildSelectReadmes(payload, outputStats);
+
+    readmes.forEach((file) => {
+      downloadText(file.filename, file.content);
+    });
+
+    setGeneratedFiles(readmes.map((file) => file.filename));
+    setCommitNote(`${readmes.length} README file${readmes.length > 1 ? 's' : ''} generated successfully.`);
+  }
+
+  return (
+    <main className="app-shell">
+      <PageHeader
+        title="Select Configuration"
+        description="Review the selected dataset, add across or within selection operations, and commit the transformation record."
+        meta={
+          <div className="stack--tight">
+            <strong>1 input dataset</strong>
+            <Link className="button button--ghost" to={routes.search}>
+              Back to search
+            </Link>
+          </div>
+        }
+      />
+
+      <section className="grid grid--editor">
+        <div className="panel">
+          <div className="panel__section panel__section--compact">
+            <div className="section-title">
+              <h2>Input Dataset</h2>
+              <span className="muted">selected</span>
+            </div>
+            <DatasetFactsCard
+              dataset={dataset}
+              objectCount={dataset.objectCount}
+              variableCount={dataset.variableCount}
+              labelCount={dataset.labelCount}
+              metadataText={dataset.metadataSummary}
+              titleLabel="Input"
+            />
+          </div>
+
+          <div className="panel__section panel__section--compact">
+            <div className="section-title">
+              <h2>Selection Builder</h2>
+            </div>
+            <SelectForm form={form} onChange={handleFormChange} schema={schema} draftValidationMessage={draftValidationMessage} />
+          </div>
+
+          <div className="panel__section panel__section--compact">
+            <div className="section-title">
+              <h2>Output Dataset</h2>
+              <span className="muted">1 output</span>
+            </div>
+            <div className="dataset-facts-card">
+              <div className="dataset-facts-grid dataset-facts-grid--five">
+                <div>
+                  <label>Name</label>
+                  <input className="dataset-summary-row__input dataset-summary-row__input--name" onChange={(event) => handleOutputNameChange(event.target.value)} value={form.outputName} />
+                </div>
+                <div>
+                  <label>ID</label>
+                  <p>{derivedDataset.draft_id}</p>
+                </div>
+                <div>
+                  <label>Type</label>
+                  <p>virtual</p>
+                </div>
+                <div>
+                  <label>Data objects</label>
+                  <p>{outputStats.objectCount}</p>
+                </div>
+                <div>
+                  <label>Metadata</label>
+                  <p>{formatOutputMetadata(form)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="panel__section panel__section--compact">
+            <div className="section-title">
+              <h2>Comments</h2>
+            </div>
+            <CommentEditor form={form} onChange={handleFormChange} />
+          </div>
+        </div>
+
+        <aside className="panel">
+          <div className="panel__section panel__section--compact">
+            <div className="section-title">
+              <h2>Review</h2>
+            </div>
+            <SelectReview dataset={dataset} form={form} outputStats={outputStats} />
+            <div className="panel-action-end">
+              <button className="button button--secondary button--icon" type="button">
+                <span aria-hidden="true" className="button__icon">
+                  <svg fill="none" height="14" viewBox="0 0 16 16" width="14" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M10.5 10.5L14 14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/>
+                  </svg>
+                </span>
+                <span>Inspect Dataset</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="panel__section panel__section--compact">
+            <div className="section-title">
+              <h3>Commit</h3>
+            </div>
+            <p className="partition-note">Commit generates the internal transformation record for later service integration.</p>
+            <div className="action-row" style={{ marginTop: '8px' }}>
+              <button className="button button--primary" disabled={Boolean(validationMessage)} onClick={handleCommit} type="button">
+                Commit
+              </button>
+              <Link className="button button--secondary" to={routes.search}>
+                Cancel
+              </Link>
+            </div>
+            {validationMessage ? <p className="field-error" style={{ marginTop: '8px' }}>{validationMessage}</p> : null}
+            {commitNote ? (
+              <div className="success-banner" role="status">
+                <strong>{commitNote}</strong>
+                <span className="muted">Generated files: {generatedFiles.join(', ')}</span>
+                <div className="action-row">
+                  <Link className="button button--secondary" to={routes.search}>
+                    Return to Search
+                  </Link>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        </aside>
+      </section>
+    </main>
+  );
+}
+
+function deriveOutputStats(dataset: DatasetRecord, schema: SelectDatasetSchema, form: SelectFormState) {
+  if (form.operations.length === 1) {
+    const step = form.operations[0];
+
+    if (step.scope === 'across' && step.mode === 'labels') {
+      const objectCount = (schema.labelClassesByHeading[step.field] ?? [])
+        .filter((item) => step.values.includes(item.name))
+        .reduce((sum, item) => sum + item.count, 0);
+
+      return {
+        objectCount: objectCount || dataset.objectCount,
+        variableCount: dataset.variableCount,
+        labelCount: dataset.labelCount,
+      };
+    }
+  }
+
+  return {
+    objectCount: dataset.objectCount,
+    variableCount: dataset.variableCount,
+    labelCount: dataset.labelCount,
+  };
+}
+
+function formatOutputMetadata(form: SelectFormState) {
+  if (form.operations.length === 0) {
+    return 'Pending selection operations';
+  }
+
+  return `Derived from ${form.operations.length} selection step${form.operations.length === 1 ? '' : 's'}`;
+}
+
+interface DatasetFactsCardProps {
+  dataset: DatasetRecord;
+  objectCount: number;
+  variableCount: number;
+  labelCount: number;
+  metadataText: string;
+  titleLabel: 'Input' | 'Output';
+}
+
+function DatasetFactsCard({ dataset, objectCount, variableCount, labelCount, metadataText, titleLabel }: DatasetFactsCardProps) {
+  return (
+    <div className="dataset-facts-card">
+      <div className="dataset-facts-grid dataset-facts-grid--five">
+        <div>
+          <label>Name</label>
+          <p>{dataset.name}</p>
+        </div>
+        <div>
+          <label>ID</label>
+          <p>{dataset.id}</p>
+        </div>
+        <div>
+          <label>Type</label>
+          <p>{dataset.type}</p>
+        </div>
+        <div>
+          <label>Data objects</label>
+          <p>{objectCount}</p>
+        </div>
+        <div>
+          <label>Metadata</label>
+          <p>{metadataText}</p>
+        </div>
+      </div>
+      <div className="dataset-facts-grid dataset-facts-grid--three" style={{ marginTop: '10px' }}>
+        <div>
+          <label>{titleLabel} variables</label>
+          <p>{variableCount}</p>
+        </div>
+        <div>
+          <label>{titleLabel} labels</label>
+          <p>{labelCount}</p>
+        </div>
+        <div>
+          <label>Modality</label>
+          <p>{dataset.modality}</p>
+        </div>
+      </div>
+    </div>
+  );
+}

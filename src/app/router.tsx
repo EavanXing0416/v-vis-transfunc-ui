@@ -1,6 +1,8 @@
 import { createHashRouter } from 'react-router-dom';
-import { SearchPage } from '../pages/search/SearchPage';
 import { PartitionPage } from '../pages/partition/PartitionPage';
+import { SampleFieldPage } from '../pages/samplefield/SampleFieldPage';
+import { SearchPage } from '../pages/search/SearchPage';
+import { SelectPage } from '../pages/select/SelectPage';
 
 export const router = createHashRouter([
   {
@@ -10,5 +12,13 @@ export const router = createHashRouter([
   {
     path: '/transform/partition',
     element: <PartitionPage />,
+  },
+  {
+    path: '/transform/sample-field',
+    element: <SampleFieldPage />,
+  },
+  {
+    path: '/transform/select',
+    element: <SelectPage />,
   },
 ]);

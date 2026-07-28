@@ -94,6 +94,13 @@
   gap: 8px;
 }
 
+
+.panel-action-end {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
 .button {
   border: 0;
   border-radius: 8px;
@@ -126,6 +133,18 @@
   cursor: not-allowed;
   opacity: 0.5;
   transform: none;
+}
+
+
+.button--icon {
+  align-items: center;
+  display: inline-flex;
+  gap: 7px;
+}
+
+.button__icon {
+  display: inline-flex;
+  line-height: 0;
 }
 
 .stack {
@@ -362,6 +381,36 @@
   gap: 8px;
 }
 
+.select-builder-row {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.select-builder-field {
+  align-items: center;
+  column-gap: 10px;
+  grid-template-columns: 110px minmax(0, 1fr);
+}
+
+.select-builder-shortcuts {
+  margin-top: 4px;
+}
+
+.checkbox-grid.select-builder-card-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.select-builder-add-row {
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.select-builder-operation-actions {
+  align-items: center;
+  column-gap: 14px;
+}
+
 .partition-note {
   color: var(--muted);
   font-size: 0.82rem;
@@ -375,8 +424,12 @@
   .ratio-grid,
   .function-grid,
   .field--inline,
+  .select-builder-row,
+  .select-builder-card-grid,
   .dataset-summary-row,
-  .dataset-summary-row--output {
+  .dataset-summary-row--output,
+  .dataset-facts-grid,
+  .checkbox-grid {
     grid-template-columns: 1fr;
   }
 
@@ -384,4 +437,83 @@
   .dataset-summary-table__head--output {
     display: none;
   }
+}
+
+
+.field--wide-inline {
+  grid-template-columns: 140px minmax(0, 1fr);
+}
+
+.dataset-facts-card {
+  border-top: 1px solid rgba(201, 216, 228, 0.85);
+  display: grid;
+  gap: 8px;
+  padding: 8px 4px 0;
+}
+
+.dataset-facts-card__header {
+  align-items: baseline;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.dataset-facts-card__header strong {
+  font-size: 0.92rem;
+}
+
+.dataset-facts-card__header span {
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.dataset-facts-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.dataset-facts-card label {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.dataset-facts-card p {
+  font-size: 0.86rem;
+  line-height: 1.3;
+  margin: 1px 0 0;
+}
+
+.checkbox-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.checkbox-card {
+  align-items: center;
+  border: 1px solid rgba(201, 216, 228, 0.9);
+  border-radius: var(--radius-md);
+  column-gap: 8px;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  padding: 8px 10px;
+}
+
+.checkbox-card small {
+  color: var(--muted);
+  font-size: 0.75rem;
+  grid-column: 2;
+}
+
+.checkbox-grid.select-builder-card-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+
+.table-footer-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }

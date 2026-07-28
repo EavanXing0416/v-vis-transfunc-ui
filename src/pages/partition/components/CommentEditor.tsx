@@ -1,11 +1,13 @@
-import type { PartitionFormState } from '../../../features/partition/partition.types';
-
-interface CommentEditorProps {
-  form: PartitionFormState;
-  onChange: (nextForm: PartitionFormState) => void;
+interface CommentableFormState {
+  comments: string;
 }
 
-export function CommentEditor({ form, onChange }: CommentEditorProps) {
+interface CommentEditorProps<TForm extends CommentableFormState> {
+  form: TForm;
+  onChange: (nextForm: TForm) => void;
+}
+
+export function CommentEditor<TForm extends CommentableFormState>({ form, onChange }: CommentEditorProps<TForm>) {
   function update(value: string) {
     onChange({
       ...form,
@@ -18,7 +20,7 @@ export function CommentEditor({ form, onChange }: CommentEditorProps) {
       <textarea
         id="comments"
         onChange={(event) => update(event.target.value)}
-        placeholder="Please leave your user comment, for example the purpose of this partition or how the outputs will be used."
+        placeholder="Please leave your user comment, for example the purpose of this transformation or how the outputs will be used."
         value={form.comments}
       />
     </div>

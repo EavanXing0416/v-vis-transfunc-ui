@@ -15,6 +15,19 @@ const transformationFunctions = [
     action: routes.partition,
   },
   {
+    name: 'SampleField',
+    description: 'Sample each selected field dataset into output objects.',
+    enabled: true,
+    action: routes.sampleField,
+  },
+  {
+    name: 'Select',
+    description: 'Select data objects, variables, or labels from one dataset.',
+    enabled: true,
+    action: routes.select,
+    requiresSingleSelection: true,
+  },
+  {
     name: 'Merge',
     description: 'Combine similar datasets into one merged dataset.',
     enabled: false,
@@ -22,11 +35,6 @@ const transformationFunctions = [
   {
     name: 'Integration',
     description: 'Fuse heterogeneous datasets into one integrated dataset.',
-    enabled: false,
-  },
-  {
-    name: 'Selection',
-    description: 'Select variables or labels for focused downstream datasets.',
     enabled: false,
   },
   {
@@ -46,11 +54,15 @@ const transformationFunctions = [
   },
 ];
 
+const INITIAL_VISIBLE_ROWS = 20;
+const SHOW_MORE_STEP = 20;
+
 export function SearchPage() {
   const navigate = useNavigate();
   const [datasets, setDatasets] = useState<DatasetRecord[]>([]);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [query, setQuery] = useState('');
+  const [visibleRows, setVisibleRows] = useState(INITIAL_VISIBLE_ROWS);
 
   useEffect(() => {
     void loadDatasets().then(setDatasets);
@@ -71,6 +83,15 @@ export function SearchPage() {
     );
   }, [datasets, query]);
 
+  useEffect(() => {
+    setVisibleRows(INITIAL_VISIBLE_ROWS);
+  }, [query, datasets.length]);
+
+  const visibleDatasets = useMemo(
+    () => filteredDatasets.slice(0, visibleRows),
+    [filteredDatasets, visibleRows],
+  );
+
   const selectedDatasets = useMemo(
     () => datasets.filter((dataset) => selectedIds.includes(dataset.id)),
     [datasets, selectedIds],
@@ -78,12 +99,26 @@ export function SearchPage() {
 
   const summary = summarizeDatasetSelection(selectedDatasets);
   const allFilteredSelected = filteredDatasets.length > 0 && filteredDatasets.every((dataset) => selectedIds.includes(dataset.id));
+  const hasMoreResults = filteredDatasets.length > visibleDatasets.length;
 
   function handleToggle(datasetId: string) {
     setSelectedIds((current) =>
       current.includes(datasetId)
         ? current.filter((id) => id !== datasetId)
         : [...current, datasetId],
+    );
+  }
+
+  function handleNameChange(datasetId: string, nextName: string) {
+    setDatasets((current) =>
+      current.map((dataset) =>
+        dataset.id === datasetId
+          ? {
+              ...dataset,
+              name: nextName,
+            }
+          : dataset,
+      ),
     );
   }
 
@@ -95,18 +130,20 @@ export function SearchPage() {
     setSelectedIds([]);
   }
 
-  function handlePartition() {
-    navigate(routes.partition, {
+  function handleShowMore() {
+    setVisibleRows((current) => current + SHOW_MORE_STEP);
+  }
+
+  function handleTransformationClick(route?: string) {
+    if (!route) {
+      return;
+    }
+
+    navigate(route, {
       state: {
         selectedDatasets,
       },
     });
-  }
-
-  function handleTransformationClick(route?: string) {
-    if (route === routes.partition) {
-      handlePartition();
-    }
   }
 
   return (
@@ -127,7 +164,7 @@ export function SearchPage() {
           <div className="panel__section">
             <div className="section-title">
               <h2>Search Results</h2>
-              <span className="muted">Showing up to 20 visible rows</span>
+              <span className="muted">Showing {visibleDatasets.length} of {filteredDatasets.length} rows</span>
             </div>
 
             <div className="field" style={{ marginBottom: '10px' }}>
@@ -161,12 +198,21 @@ export function SearchPage() {
 
             <CompactDatasetTable
               compact
-              datasets={filteredDatasets}
+              datasets={visibleDatasets}
               maxHeightClassName="dataset-table-wrap--capped"
+              onNameChange={handleNameChange}
               onToggle={handleToggle}
               selectable
               selectedIds={selectedIds}
             />
+
+            {hasMoreResults ? (
+              <div className="table-footer-action">
+                <button className="button button--secondary" onClick={handleShowMore} type="button">
+                  Show more
+                </button>
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -175,7 +221,7 @@ export function SearchPage() {
             <div className="section-title">
               <h2>Selection Summary</h2>
             </div>
-            <dl className="summary-list summary-list--compact">
+            <dl className="summary-list">
               <div className="summary-list__row">
                 <dt>Selected</dt>
                 <dd>{summary.total}</dd>
@@ -188,9 +234,9 @@ export function SearchPage() {
                 <dt>Virtual</dt>
                 <dd>{summary.virtualCount}</dd>
               </div>
-              <div className="summary-list__row">
+              <div className="summary-list__row summary-list__row--wrap">
                 <dt>Preview</dt>
-                <dd>{summary.previewNames.length ? summary.previewNames.join(', ') : 'No selection yet'}</dd>
+                <dd className="summary-list__value summary-list__value--wrap">{summary.previewNames.length ? summary.previewNames.join(', ') : 'No selection yet'}</dd>
               </div>
             </dl>
           </div>
@@ -200,18 +246,21 @@ export function SearchPage() {
               <h3>Transformation Functions</h3>
             </div>
             <div className="function-grid">
-              {transformationFunctions.map((item) => (
-                <button
-                  key={item.name}
-                  className={`function-card ${item.enabled ? 'button button--secondary' : 'button button--secondary'}`}
-                  disabled={!item.enabled || selectedDatasets.length === 0}
-                  onClick={() => handleTransformationClick(item.action)}
-                  type="button"
-                >
-                  <strong>{item.name}</strong>
-                  <span>{item.description}</span>
-                </button>
-              ))}
+              {transformationFunctions.map((item) => {
+                const disabledBySelection = item.requiresSingleSelection ? selectedDatasets.length !== 1 : selectedDatasets.length === 0;
+                return (
+                  <button
+                    key={item.name}
+                    className="function-card button button--secondary"
+                    disabled={!item.enabled || disabledBySelection}
+                    onClick={() => handleTransformationClick(item.action)}
+                    type="button"
+                  >
+                    <strong>{item.name}</strong>
+                    <span>{item.description}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </aside>

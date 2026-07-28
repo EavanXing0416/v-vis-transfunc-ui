@@ -2,47 +2,41 @@ import { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { PageHeader } from '../../components/layout/PageHeader';
 import type { DatasetRecord } from '../../features/datasets/dataset.types';
-import { defaultPartitionForm } from '../../features/partition/partition.defaults';
-import { buildPartitionPayload } from '../../features/partition/buildPartitionPayload';
-import { buildPartitionReadmes } from '../../features/partition/buildPartitionReadmes';
-import { getPartitionValidationMessage } from '../../features/partition/partition.validation';
+import { buildSampleFieldPayload } from '../../features/samplefield/buildSampleFieldPayload';
+import { buildSampleFieldReadmes } from '../../features/samplefield/buildSampleFieldReadmes';
+import { defaultSampleFieldForm } from '../../features/samplefield/sampleField.defaults';
+import { getSampleFieldValidationMessage } from '../../features/samplefield/sampleField.validation';
 import type { DerivedDatasetDraft } from '../../features/transformations/transformation.types';
 import { downloadText } from '../../lib/downloadText';
 import { routes } from '../../lib/routes';
 import { mockDatasets } from '../../mocks/datasets';
-import { CommentEditor } from './components/CommentEditor';
-import { InputDatasetSummary } from './components/InputDatasetSummary';
-import { PartitionForm } from './components/PartitionForm';
-import { ReviewSummary } from './components/ReviewSummary';
+import { CommentEditor } from '../partition/components/CommentEditor';
+import { InputDatasetSummary } from '../partition/components/InputDatasetSummary';
+import { SampleFieldForm } from './components/SampleFieldForm';
+import { SampleFieldReview } from './components/SampleFieldReview';
 
-interface PartitionLocationState {
+interface SampleFieldLocationState {
   selectedDatasets?: DatasetRecord[];
 }
 
-const ROLE_CONFIG = [
-  { role: 'train' as const, suffix: 'trn', ratioKey: 'trainRatio' as const },
-  { role: 'validation' as const, suffix: 'vld', ratioKey: 'validationRatio' as const },
-  { role: 'test' as const, suffix: 'tst', ratioKey: 'testRatio' as const },
-];
-
-export function PartitionPage() {
+export function SampleFieldPage() {
   const location = useLocation();
-  const locationState = location.state as PartitionLocationState | null;
+  const locationState = location.state as SampleFieldLocationState | null;
   const selectedDatasets = locationState?.selectedDatasets?.length
     ? locationState.selectedDatasets
-    : mockDatasets.slice(0, 3);
+    : mockDatasets.slice(3, 6);
 
-  const [form, setForm] = useState(defaultPartitionForm);
+  const [form, setForm] = useState(defaultSampleFieldForm);
   const [commitNote, setCommitNote] = useState('');
   const [generatedFiles, setGeneratedFiles] = useState<string[]>([]);
   const [outputNameOverrides, setOutputNameOverrides] = useState<Record<string, string>>({});
 
-  const validationMessage = useMemo(() => getPartitionValidationMessage(form), [form]);
-  const derivedDatasets = useMemo(() => buildDerivedDatasets(selectedDatasets, form, outputNameOverrides), [selectedDatasets, form, outputNameOverrides]);
+  const validationMessage = useMemo(() => getSampleFieldValidationMessage(form), [form]);
+  const derivedDatasets = useMemo(() => buildDerivedDatasets(selectedDatasets, form.numberOfDataObjects, outputNameOverrides), [selectedDatasets, form.numberOfDataObjects, outputNameOverrides]);
 
   function handleCommit() {
-    const payload = buildPartitionPayload(selectedDatasets, form, derivedDatasets);
-    const readmes = buildPartitionReadmes(payload);
+    const payload = buildSampleFieldPayload(selectedDatasets, form, derivedDatasets);
+    const readmes = buildSampleFieldReadmes(payload);
 
     readmes.forEach((file) => {
       downloadText(file.filename, file.content);
@@ -62,8 +56,8 @@ export function PartitionPage() {
   return (
     <main className="app-shell">
       <PageHeader
-        title="Partition Configuration"
-        description="Review input datasets, set partition parameters, define outputs, and commit the transformation record."
+        title="SampleField Configuration"
+        description="Review input datasets, set sampling parameters, define outputs, and commit the transformation record."
         meta={
           <div className="stack--tight">
             <strong>{selectedDatasets.length} input datasets</strong>
@@ -86,9 +80,9 @@ export function PartitionPage() {
 
           <div className="panel__section panel__section--compact">
             <div className="section-title">
-              <h2>Partition Parameters</h2>
+              <h2>SampleField Parameters</h2>
             </div>
-            <PartitionForm form={form} onChange={setForm} validationMessage={validationMessage} />
+            <SampleFieldForm form={form} onChange={setForm} validationMessage={validationMessage} />
           </div>
 
           <div className="panel__section panel__section--compact">
@@ -105,14 +99,14 @@ export function PartitionPage() {
                 <span>Metadata</span>
               </div>
               {derivedDatasets.map((dataset) => {
-                const key = `${dataset.parent_id}-${dataset.role}`;
+                const key = dataset.parent_id;
                 return (
                   <article className="dataset-summary-row" key={key}>
                     <input className="dataset-summary-row__input dataset-summary-row__input--name" id={key} onChange={(event) => handleOutputNameChange(key, event.target.value)} value={dataset.name} />
                     <span>{dataset.draft_id}</span>
                     <span className="dataset-summary-row__type">virtual</span>
                     <span>{dataset.object_count}</span>
-                    <span>{labelForRole(dataset.role)}</span>
+                    <span>{`SampleField, ${form.numberOfSamplesPerObject} samples/object`}</span>
                   </article>
                 );
               })}
@@ -132,7 +126,7 @@ export function PartitionPage() {
             <div className="section-title">
               <h2>Review</h2>
             </div>
-            <ReviewSummary datasets={selectedDatasets} derivedDatasets={derivedDatasets} form={form} />
+            <SampleFieldReview datasets={selectedDatasets} derivedDatasets={derivedDatasets} form={form} />
             <div className="panel-action-end">
               <button className="button button--secondary button--icon" type="button">
                 <span aria-hidden="true" className="button__icon">
@@ -179,57 +173,15 @@ export function PartitionPage() {
 
 function buildDerivedDatasets(
   datasets: DatasetRecord[],
-  form: typeof defaultPartitionForm,
+  objectCount: number,
   outputNameOverrides: Record<string, string>,
 ): DerivedDatasetDraft[] {
-  const activeRoles = ROLE_CONFIG.filter((config) => form[config.ratioKey] > 0);
-
-  return datasets.flatMap((dataset) => {
-    const counts = distributeObjectCounts(
-      dataset.objectCount,
-      activeRoles.map((config) => form[config.ratioKey]),
-    );
-
-    return activeRoles.map((config, index) => {
-      const key = `${dataset.id}-${config.role}`;
-      return {
-        role: config.role,
-        draft_id: `DRV-${dataset.id}-${config.suffix}`,
-        assigned_id: null,
-        parent_id: dataset.id,
-        name: outputNameOverrides[key] || `${dataset.name}_${config.suffix}`,
-        object_count: counts[index],
-      };
-    });
-  });
-}
-
-function distributeObjectCounts(total: number, ratios: number[]) {
-  const raw = ratios.map((ratio) => ratio * total);
-  const base = raw.map((value) => Math.floor(value));
-  let remainder = total - base.reduce((sum, value) => sum + value, 0);
-
-  const order = raw
-    .map((value, index) => ({ index, fraction: value - Math.floor(value) }))
-    .sort((a, b) => b.fraction - a.fraction);
-
-  for (let i = 0; i < order.length && remainder > 0; i += 1) {
-    base[order[i].index] += 1;
-    remainder -= 1;
-  }
-
-  return base;
-}
-
-function labelForRole(role: DerivedDatasetDraft['role']) {
-  switch (role) {
-    case 'train':
-      return 'Train';
-    case 'validation':
-      return 'Validation';
-    case 'test':
-      return 'Test';
-    default:
-      return role;
-  }
+  return datasets.map((dataset) => ({
+    role: 'sampled',
+    draft_id: `DRV-${dataset.id}-smp`,
+    assigned_id: null,
+    parent_id: dataset.id,
+    name: outputNameOverrides[dataset.id] || `${dataset.name}_smp`,
+    object_count: objectCount,
+  }));
 }
