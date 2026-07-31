@@ -5,6 +5,7 @@ import { CompactDatasetTable } from '../../components/tables/CompactDatasetTable
 import type { DatasetRecord } from '../../features/datasets/dataset.types';
 import { summarizeDatasetSelection } from '../../features/datasets/datasetSummary';
 import { routes } from '../../lib/routes';
+import { getDatasetDataObjectType } from '../../features/datasets/dataObjectType';
 import { loadDatasets } from '../../services/searchService';
 
 const transformationFunctions = [
@@ -19,6 +20,12 @@ const transformationFunctions = [
     description: 'Sample each selected field dataset into output objects.',
     enabled: true,
     action: routes.sampleField,
+  },
+  {
+    name: 'SimulatePDE',
+    description: 'Simulate PDE fields from symbolic and boundary specifications.',
+    enabled: true,
+    action: routes.simulatePDE,
   },
   {
     name: 'Select',
@@ -65,7 +72,9 @@ export function SearchPage() {
   const [visibleRows, setVisibleRows] = useState(INITIAL_VISIBLE_ROWS);
 
   useEffect(() => {
-    void loadDatasets().then(setDatasets);
+    void loadDatasets().then((loadedDatasets) => {
+      setDatasets(loadedDatasets.map((dataset) => ({ ...dataset, type: 'virtual' })));
+    });
   }, []);
 
   const filteredDatasets = useMemo(() => {
@@ -76,7 +85,7 @@ export function SearchPage() {
     }
 
     return datasets.filter((dataset) =>
-      [dataset.id, dataset.name, dataset.type, dataset.source, dataset.metadataSummary, dataset.modality]
+      [dataset.name, dataset.type, dataset.source, dataset.metadataSummary, dataset.modality, getDatasetDataObjectType(dataset)]
         .join(' ')
         .toLowerCase()
         .includes(normalizedQuery),
@@ -116,6 +125,19 @@ export function SearchPage() {
           ? {
               ...dataset,
               name: nextName,
+            }
+          : dataset,
+      ),
+    );
+  }
+
+  function handleTypeChange(datasetId: string, nextType: DatasetRecord['type']) {
+    setDatasets((current) =>
+      current.map((dataset) =>
+        dataset.id === datasetId
+          ? {
+              ...dataset,
+              type: nextType,
             }
           : dataset,
       ),
@@ -172,7 +194,7 @@ export function SearchPage() {
               <input
                 id="dataset-search"
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search by dataset ID, name, type, source, or metadata"
+                placeholder="Search by name, type, source, or metadata"
                 value={query}
               />
             </div>
@@ -202,6 +224,7 @@ export function SearchPage() {
               maxHeightClassName="dataset-table-wrap--capped"
               onNameChange={handleNameChange}
               onToggle={handleToggle}
+              onTypeChange={handleTypeChange}
               selectable
               selectedIds={selectedIds}
             />

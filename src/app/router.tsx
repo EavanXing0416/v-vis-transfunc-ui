@@ -3,6 +3,7 @@ import { PartitionPage } from '../pages/partition/PartitionPage';
 import { SampleFieldPage } from '../pages/samplefield/SampleFieldPage';
 import { SearchPage } from '../pages/search/SearchPage';
 import { SelectPage } from '../pages/select/SelectPage';
+import { SimulatePDEPage } from '../pages/simulatepde/SimulatePDEPage';
 
 export const router = createHashRouter([
   {
@@ -20,5 +21,9 @@ export const router = createHashRouter([
   {
     path: '/transform/select',
     element: <SelectPage />,
+  },
+  {
+    path: '/transform/simulate-pde',
+    element: <SimulatePDEPage />,
   },
 ]);

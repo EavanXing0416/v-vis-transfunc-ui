@@ -30,24 +30,36 @@ export function SampleFieldPage() {
   const [commitNote, setCommitNote] = useState('');
   const [generatedFiles, setGeneratedFiles] = useState<string[]>([]);
   const [outputNameOverrides, setOutputNameOverrides] = useState<Record<string, string>>({});
+  const [outputTypeOverrides, setOutputTypeOverrides] = useState<Record<string, DatasetRecord['type']>>({});
 
   const validationMessage = useMemo(() => getSampleFieldValidationMessage(form), [form]);
-  const derivedDatasets = useMemo(() => buildDerivedDatasets(selectedDatasets, form.numberOfDataObjects, outputNameOverrides), [selectedDatasets, form.numberOfDataObjects, outputNameOverrides]);
+  const derivedDatasets = useMemo(
+    () => buildDerivedDatasets(selectedDatasets, form.numberOfDataObjects, outputNameOverrides, outputTypeOverrides),
+    [selectedDatasets, form.numberOfDataObjects, outputNameOverrides, outputTypeOverrides],
+  );
+  const previewReadmes = useMemo(() => {
+    const payload = buildSampleFieldPayload(selectedDatasets, form, derivedDatasets);
+    return buildSampleFieldReadmes(payload);
+  }, [selectedDatasets, form, derivedDatasets]);
 
   function handleCommit() {
-    const payload = buildSampleFieldPayload(selectedDatasets, form, derivedDatasets);
-    const readmes = buildSampleFieldReadmes(payload);
-
-    readmes.forEach((file) => {
+    previewReadmes.forEach((file) => {
       downloadText(file.filename, file.content);
     });
 
-    setGeneratedFiles(readmes.map((file) => file.filename));
-    setCommitNote(`${readmes.length} README file${readmes.length > 1 ? 's' : ''} generated successfully.`);
+    setGeneratedFiles(previewReadmes.map((file) => file.filename));
+    setCommitNote(`${previewReadmes.length} README file${previewReadmes.length > 1 ? 's' : ''} generated successfully.`);
   }
 
   function handleOutputNameChange(key: string, value: string) {
     setOutputNameOverrides((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  }
+
+  function handleOutputTypeChange(key: string, value: DatasetRecord['type']) {
+    setOutputTypeOverrides((current) => ({
       ...current,
       [key]: value,
     }));
@@ -93,20 +105,24 @@ export function SampleFieldPage() {
             <div className="dataset-summary-table dataset-summary-table--aligned">
               <div className="dataset-summary-table__head">
                 <span>Name</span>
-                <span>ID</span>
                 <span>Type</span>
                 <span>Data Objects</span>
+                <span>Data object type</span>
                 <span>Metadata</span>
               </div>
-              {derivedDatasets.map((dataset) => {
+              {derivedDatasets.map((dataset, index) => {
                 const key = dataset.parent_id;
+                const parentDataset = selectedDatasets.find((item) => item.id === dataset.parent_id);
                 return (
-                  <article className="dataset-summary-row" key={key}>
+                  <article className="dataset-summary-row dataset-summary-row--with-info" key={key}>
                     <input className="dataset-summary-row__input dataset-summary-row__input--name" id={key} onChange={(event) => handleOutputNameChange(key, event.target.value)} value={dataset.name} />
-                    <span>{dataset.draft_id}</span>
-                    <span className="dataset-summary-row__type">virtual</span>
+                    <select className="dataset-summary-row__input" onChange={(event) => handleOutputTypeChange(key, event.target.value as DatasetRecord['type'])} value={dataset.type}>
+                      <option value="virtual">virtual</option>
+                      <option value="physical">physical</option>
+                    </select>
                     <span>{dataset.object_count}</span>
-                    <span>{`SampleField, ${form.numberOfSamplesPerObject} samples/object`}</span>
+                    <span>Sampled field object</span>
+                    <span>{appendSamplePoints(parentDataset?.metadataSummary ?? 'n.a.', form.numberOfSamplesPerObject)}</span>
                   </article>
                 );
               })}
@@ -175,6 +191,7 @@ function buildDerivedDatasets(
   datasets: DatasetRecord[],
   objectCount: number,
   outputNameOverrides: Record<string, string>,
+  outputTypeOverrides: Record<string, DatasetRecord['type']>,
 ): DerivedDatasetDraft[] {
   return datasets.map((dataset) => ({
     role: 'sampled',
@@ -182,6 +199,17 @@ function buildDerivedDatasets(
     assigned_id: null,
     parent_id: dataset.id,
     name: outputNameOverrides[dataset.id] || `${dataset.name}_smp`,
+    type: outputTypeOverrides[dataset.id] || 'virtual',
     object_count: objectCount,
   }));
+}
+
+function appendSamplePoints(metadata: string, samplePoints: number) {
+  const trimmed = metadata.trim();
+
+  if (!trimmed || trimmed === 'n.a.') {
+    return `${samplePoints} sample points.`;
+  }
+
+  return `${trimmed}${trimmed.endsWith('.') ? '' : '.'} ${samplePoints} sample points.`;
 }

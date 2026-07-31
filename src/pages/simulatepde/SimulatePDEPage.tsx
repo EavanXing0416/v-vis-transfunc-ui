@@ -1,52 +1,46 @@
 import { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { PageHeader } from '../../components/layout/PageHeader';
-import { getDatasetDataObjectType } from '../../features/datasets/dataObjectType';
 import type { DatasetRecord } from '../../features/datasets/dataset.types';
-import { buildPartitionPayload } from '../../features/partition/buildPartitionPayload';
-import { buildPartitionReadmes } from '../../features/partition/buildPartitionReadmes';
-import { defaultPartitionForm } from '../../features/partition/partition.defaults';
-import { getPartitionValidationMessage } from '../../features/partition/partition.validation';
+import { buildSimulatePDEPayload } from '../../features/simulatepde/buildSimulatePDEPayload';
+import { buildSimulatePDEReadmes } from '../../features/simulatepde/buildSimulatePDEReadmes';
+import { defaultSimulatePDEForm } from '../../features/simulatepde/simulatePDE.defaults';
+import type { SimulatePDEFormState } from '../../features/simulatepde/simulatePDE.types';
+import { getSimulatePDEValidationMessage } from '../../features/simulatepde/simulatePDE.validation';
 import type { DerivedDatasetDraft } from '../../features/transformations/transformation.types';
 import { downloadText } from '../../lib/downloadText';
 import { routes } from '../../lib/routes';
 import { mockDatasets } from '../../mocks/datasets';
-import { CommentEditor } from './components/CommentEditor';
-import { InputDatasetSummary } from './components/InputDatasetSummary';
-import { PartitionForm } from './components/PartitionForm';
-import { ReviewSummary } from './components/ReviewSummary';
+import { CommentEditor } from '../partition/components/CommentEditor';
+import { InputDatasetSummary } from '../partition/components/InputDatasetSummary';
+import { SimulatePDEForm } from './components/SimulatePDEForm';
+import { SimulatePDEReview } from './components/SimulatePDEReview';
 
-interface PartitionLocationState {
+interface SimulatePDELocationState {
   selectedDatasets?: DatasetRecord[];
 }
 
-const ROLE_CONFIG = [
-  { role: 'train' as const, suffix: 'trn', ratioKey: 'trainRatio' as const },
-  { role: 'validation' as const, suffix: 'vld', ratioKey: 'validationRatio' as const },
-  { role: 'test' as const, suffix: 'tst', ratioKey: 'testRatio' as const },
-];
-
-export function PartitionPage() {
+export function SimulatePDEPage() {
   const location = useLocation();
-  const locationState = location.state as PartitionLocationState | null;
+  const locationState = location.state as SimulatePDELocationState | null;
   const selectedDatasets = locationState?.selectedDatasets?.length
     ? locationState.selectedDatasets
-    : mockDatasets.slice(0, 3);
+    : mockDatasets.filter((dataset) => dataset.name === 'PDE-Helmholtz' || dataset.name === 'PDE-Wave');
 
-  const [form, setForm] = useState(defaultPartitionForm);
+  const [form, setForm] = useState(defaultSimulatePDEForm);
   const [commitNote, setCommitNote] = useState('');
   const [generatedFiles, setGeneratedFiles] = useState<string[]>([]);
   const [outputNameOverrides, setOutputNameOverrides] = useState<Record<string, string>>({});
   const [outputTypeOverrides, setOutputTypeOverrides] = useState<Record<string, DatasetRecord['type']>>({});
 
-  const validationMessage = useMemo(() => getPartitionValidationMessage(form), [form]);
+  const validationMessage = useMemo(() => getSimulatePDEValidationMessage(form), [form]);
   const derivedDatasets = useMemo(
     () => buildDerivedDatasets(selectedDatasets, form, outputNameOverrides, outputTypeOverrides),
     [selectedDatasets, form, outputNameOverrides, outputTypeOverrides],
   );
   const previewReadmes = useMemo(() => {
-    const payload = buildPartitionPayload(selectedDatasets, form, derivedDatasets);
-    return buildPartitionReadmes(payload);
+    const payload = buildSimulatePDEPayload(selectedDatasets, form, derivedDatasets);
+    return buildSimulatePDEReadmes(payload);
   }, [selectedDatasets, form, derivedDatasets]);
 
   function handleCommit() {
@@ -75,8 +69,8 @@ export function PartitionPage() {
   return (
     <main className="app-shell">
       <PageHeader
-        title="Partition Configuration"
-        description="Review input datasets, set partition parameters, define outputs, and commit the transformation record."
+        title="SimulatePDE Configuration"
+        description="Review input datasets, set PDE simulation parameters, define outputs, and commit the transformation record."
         meta={
           <div className="stack--tight">
             <strong>{selectedDatasets.length} input datasets</strong>
@@ -99,9 +93,9 @@ export function PartitionPage() {
 
           <div className="panel__section panel__section--compact">
             <div className="section-title">
-              <h2>Partition Parameters</h2>
+              <h2>Simulation Parameters</h2>
             </div>
-            <PartitionForm form={form} onChange={setForm} validationMessage={validationMessage} />
+            <SimulatePDEForm form={form} onChange={setForm} validationMessage={validationMessage} />
           </div>
 
           <div className="panel__section panel__section--compact">
@@ -118,8 +112,7 @@ export function PartitionPage() {
                 <span>Metadata</span>
               </div>
               {derivedDatasets.map((dataset, index) => {
-                const key = `${dataset.parent_id}-${dataset.role}`;
-                const parentDataset = selectedDatasets.find((item) => item.id === dataset.parent_id);
+                const key = dataset.parent_id;
                 return (
                   <article className="dataset-summary-row dataset-summary-row--with-info" key={key}>
                     <input className="dataset-summary-row__input dataset-summary-row__input--name" id={key} onChange={(event) => handleOutputNameChange(key, event.target.value)} value={dataset.name} />
@@ -128,8 +121,8 @@ export function PartitionPage() {
                       <option value="physical">physical</option>
                     </select>
                     <span>{dataset.object_count}</span>
-                    <span>{parentDataset ? getDatasetDataObjectType(parentDataset) : 'Dataset object'}</span>
-                    <span>{parentDataset?.metadataSummary ?? 'n.a.'}</span>
+                    <span>Field</span>
+                    <span>{formatOutputMetadata(form)}</span>
                   </article>
                 );
               })}
@@ -149,7 +142,7 @@ export function PartitionPage() {
             <div className="section-title">
               <h2>Review</h2>
             </div>
-            <ReviewSummary datasets={selectedDatasets} derivedDatasets={derivedDatasets} form={form} />
+            <SimulatePDEReview datasets={selectedDatasets} derivedDatasets={derivedDatasets} form={form} />
             <div className="panel-action-end">
               <button className="button button--secondary button--icon" type="button">
                 <span aria-hidden="true" className="button__icon">
@@ -196,47 +189,34 @@ export function PartitionPage() {
 
 function buildDerivedDatasets(
   datasets: DatasetRecord[],
-  form: typeof defaultPartitionForm,
+  form: SimulatePDEFormState,
   outputNameOverrides: Record<string, string>,
   outputTypeOverrides: Record<string, DatasetRecord['type']>,
 ): DerivedDatasetDraft[] {
-  const activeRoles = ROLE_CONFIG.filter((config) => form[config.ratioKey] > 0);
-
-  return datasets.flatMap((dataset) => {
-    const counts = distributeObjectCounts(
-      dataset.objectCount,
-      activeRoles.map((config) => form[config.ratioKey]),
-    );
-
-    return activeRoles.map((config, index) => {
-      const key = `${dataset.id}-${config.role}`;
-      return {
-        role: config.role,
-        draft_id: `DRV-${dataset.id}-${config.suffix}`,
-        assigned_id: null,
-        parent_id: dataset.id,
-        name: outputNameOverrides[key] || `${dataset.name}_${config.suffix}`,
-        type: outputTypeOverrides[key] || 'virtual',
-        object_count: counts[index],
-      };
-    });
-  });
+  return datasets.map((dataset) => ({
+    role: 'simulated',
+    draft_id: `DRV-${dataset.id}-sim`,
+    assigned_id: null,
+    parent_id: dataset.id,
+    name: outputNameOverrides[dataset.id] || `${dataset.name}_sim`,
+    type: outputTypeOverrides[dataset.id] || 'virtual',
+    object_count: 1,
+  }));
 }
 
-function distributeObjectCounts(total: number, ratios: number[]) {
-  const raw = ratios.map((ratio) => ratio * total);
-  const base = raw.map((value) => Math.floor(value));
-  let remainder = total - base.reduce((sum, value) => sum + value, 0);
+function formatOutputMetadata(form: SimulatePDEFormState) {
+  const prefix = form.hasTemporalDimension ? 'Spatio-temporal field.' : 'Spatial field.';
+  const parts = [`x = (${form.xMin},${form.xMax})`, `xstep = ${form.xStep}`];
 
-  const order = raw
-    .map((value, index) => ({ index, fraction: value - Math.floor(value) }))
-    .sort((a, b) => b.fraction - a.fraction);
-
-  for (let i = 0; i < order.length && remainder > 0; i += 1) {
-    base[order[i].index] += 1;
-    remainder -= 1;
+  if (form.spatialDimension === '2d') {
+    parts.push(`y = (${form.yMin},${form.yMax})`);
+    parts.push(`ystep = ${form.yStep}`);
   }
 
-  return base;
-}
+  if (form.hasTemporalDimension) {
+    parts.push(`t = (${form.tMin},${form.tMax})`);
+    parts.push(`tstep = ${form.tStep}`);
+  }
 
+  return `${prefix} ${parts.join(', ')}`;
+}

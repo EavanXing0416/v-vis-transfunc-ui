@@ -17,10 +17,12 @@ export interface DatasetRecord {
   type: DatasetType;
   source: string;
   modality: string;
+  dataObjectType?: string;
   keywordCount: number;
   objectCount: number;
   variableCount: number;
   labelCount: number;
   metadataSummary: string;
+  readmeContent?: string;
   selectMetadata?: DatasetSelectMetadata;
 }

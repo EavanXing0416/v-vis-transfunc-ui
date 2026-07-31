@@ -18,10 +18,10 @@ export function buildSelectReadmes(record: SelectTransformationRecord, details: 
     '**Select**',
     '',
     '**Input datasets:**',
-    `**${formatDatasetEntry(input.name, input.id)}**`,
+    `**${input.name}**`,
     '',
     '**Output dataset:**',
-    `**${formatDatasetEntry(dataset.name, dataset.draft_id)}**`,
+    `**${dataset.name}**`,
     '',
     '**Selection operations:**',
     ...record.select.operations.map((operation, index) => `**${index + 1}. ${formatOperation(operation)}**`),
@@ -46,10 +46,6 @@ export function buildSelectReadmes(record: SelectTransformationRecord, details: 
       content,
     },
   ];
-}
-
-function formatDatasetEntry(name: string, id: string) {
-  return `${name} (${id})`;
 }
 
 function formatOperation(operation: SelectTransformationRecord['select']['operations'][number]) {

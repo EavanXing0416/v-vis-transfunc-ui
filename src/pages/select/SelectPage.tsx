@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { ReadmePreviewButton } from '../../components/datasets/ReadmePreviewButton';
 import { PageHeader } from '../../components/layout/PageHeader';
+import { buildDatasetReadmePreview } from '../../features/datasets/buildDatasetReadmePreview';
+import { getDatasetDataObjectType } from '../../features/datasets/dataObjectType';
 import type { DatasetRecord } from '../../features/datasets/dataset.types';
 import { buildSelectPayload } from '../../features/select/buildSelectPayload';
 import { buildSelectReadmes } from '../../features/select/buildSelectReadmes';
@@ -28,6 +31,7 @@ export function SelectPage() {
   const [form, setForm] = useState(() => buildDefaultSelectForm(dataset.name, schema));
   const [commitNote, setCommitNote] = useState('');
   const [generatedFiles, setGeneratedFiles] = useState<string[]>([]);
+  const [outputType, setOutputType] = useState<DatasetRecord['type']>('virtual');
 
   const outputStats = useMemo(() => deriveOutputStats(dataset, schema, form), [dataset, schema, form]);
   const validationMessage = useMemo(() => getSelectValidationMessage(form), [form]);
@@ -39,10 +43,15 @@ export function SelectPage() {
       assigned_id: null,
       parent_id: dataset.id,
       name: form.outputName,
+      type: outputType,
       object_count: outputStats.objectCount,
     }),
-    [dataset.id, form.outputName, outputStats.objectCount],
+    [dataset.id, form.outputName, outputStats.objectCount, outputType],
   );
+  const previewReadme = useMemo(() => {
+    const payload = buildSelectPayload(dataset, form, derivedDataset);
+    return buildSelectReadmes(payload, outputStats)[0]?.content ?? '';
+  }, [dataset, form, derivedDataset, outputStats]);
 
   function handleFormChange(nextForm: SelectFormState) {
     setForm(nextForm);
@@ -89,14 +98,25 @@ export function SelectPage() {
               <h2>Input Dataset</h2>
               <span className="muted">selected</span>
             </div>
-            <DatasetFactsCard
-              dataset={dataset}
-              objectCount={dataset.objectCount}
-              variableCount={dataset.variableCount}
-              labelCount={dataset.labelCount}
-              metadataText={dataset.metadataSummary}
-              titleLabel="Input"
-            />
+            <div className="dataset-summary-table dataset-summary-table--aligned">
+              <div className="dataset-summary-table__head">
+                <span>Name</span>
+                <span>Type</span>
+                <span>Data Objects</span>
+                <span>Data object type</span>
+                <span>Metadata</span>
+              </div>
+              <article className="dataset-summary-row dataset-summary-row--with-info">
+                <span className="dataset-summary-row__name">{dataset.name}</span>
+                <span className="dataset-summary-row__type">{dataset.type}</span>
+                <span>{dataset.objectCount}</span>
+                <span>{getDatasetDataObjectType(dataset)}</span>
+                <span>{dataset.metadataSummary}</span>
+                <span className="dataset-summary-row__icon">
+                  <ReadmePreviewButton content={buildDatasetReadmePreview(dataset)} title={dataset.name} />
+                </span>
+              </article>
+            </div>
           </div>
 
           <div className="panel__section panel__section--compact">
@@ -111,29 +131,24 @@ export function SelectPage() {
               <h2>Output Dataset</h2>
               <span className="muted">1 output</span>
             </div>
-            <div className="dataset-facts-card">
-              <div className="dataset-facts-grid dataset-facts-grid--five">
-                <div>
-                  <label>Name</label>
-                  <input className="dataset-summary-row__input dataset-summary-row__input--name" onChange={(event) => handleOutputNameChange(event.target.value)} value={form.outputName} />
-                </div>
-                <div>
-                  <label>ID</label>
-                  <p>{derivedDataset.draft_id}</p>
-                </div>
-                <div>
-                  <label>Type</label>
-                  <p>virtual</p>
-                </div>
-                <div>
-                  <label>Data objects</label>
-                  <p>{outputStats.objectCount}</p>
-                </div>
-                <div>
-                  <label>Metadata</label>
-                  <p>{formatOutputMetadata(form)}</p>
-                </div>
+            <div className="dataset-summary-table dataset-summary-table--aligned">
+              <div className="dataset-summary-table__head">
+                <span>Name</span>
+                <span>Type</span>
+                <span>Data Objects</span>
+                <span>Data object type</span>
+                <span>Metadata</span>
               </div>
+              <article className="dataset-summary-row dataset-summary-row--with-info">
+                <input className="dataset-summary-row__input dataset-summary-row__input--name" onChange={(event) => handleOutputNameChange(event.target.value)} value={form.outputName} />
+                <select className="dataset-summary-row__input" onChange={(event) => setOutputType(event.target.value as DatasetRecord['type'])} value={outputType}>
+                  <option value="virtual">virtual</option>
+                  <option value="physical">physical</option>
+                </select>
+                <span>{outputStats.objectCount}</span>
+                <span>{getDatasetDataObjectType(dataset)}</span>
+                <span>{formatOutputMetadata(form)}</span>
+              </article>
             </div>
           </div>
 
@@ -226,56 +241,4 @@ function formatOutputMetadata(form: SelectFormState) {
   }
 
   return `Derived from ${form.operations.length} selection step${form.operations.length === 1 ? '' : 's'}`;
-}
-
-interface DatasetFactsCardProps {
-  dataset: DatasetRecord;
-  objectCount: number;
-  variableCount: number;
-  labelCount: number;
-  metadataText: string;
-  titleLabel: 'Input' | 'Output';
-}
-
-function DatasetFactsCard({ dataset, objectCount, variableCount, labelCount, metadataText, titleLabel }: DatasetFactsCardProps) {
-  return (
-    <div className="dataset-facts-card">
-      <div className="dataset-facts-grid dataset-facts-grid--five">
-        <div>
-          <label>Name</label>
-          <p>{dataset.name}</p>
-        </div>
-        <div>
-          <label>ID</label>
-          <p>{dataset.id}</p>
-        </div>
-        <div>
-          <label>Type</label>
-          <p>{dataset.type}</p>
-        </div>
-        <div>
-          <label>Data objects</label>
-          <p>{objectCount}</p>
-        </div>
-        <div>
-          <label>Metadata</label>
-          <p>{metadataText}</p>
-        </div>
-      </div>
-      <div className="dataset-facts-grid dataset-facts-grid--three" style={{ marginTop: '10px' }}>
-        <div>
-          <label>{titleLabel} variables</label>
-          <p>{variableCount}</p>
-        </div>
-        <div>
-          <label>{titleLabel} labels</label>
-          <p>{labelCount}</p>
-        </div>
-        <div>
-          <label>Modality</label>
-          <p>{dataset.modality}</p>
-        </div>
-      </div>
-    </div>
-  );
 }
