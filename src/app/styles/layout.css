@@ -486,6 +486,16 @@
   gap: 12px;
 }
 
+.genimage-row {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.genimage-checkbox-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .simulatepde-row--triple {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -548,10 +558,13 @@
   .field--inline,
   .select-builder-row,
   .simulatepde-row,
+  .genimage-row,
+  .stft-row,
   .select-builder-card-grid,
   .dataset-summary-row,
   .dataset-summary-row--output,
   .dataset-facts-grid,
+  .genimage-checkbox-grid,
   .checkbox-grid {
     grid-template-columns: 1fr;
   }
@@ -639,4 +652,192 @@
   display: flex;
   justify-content: center;
   margin-top: 10px;
+}
+
+
+.genimage-row--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.genimage-row--four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.genimage-checkbox-grid--compact {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.genimage-range-table__head,
+.genimage-range-table__row {
+  grid-template-columns: minmax(0, 1.15fr) repeat(3, minmax(90px, 1fr));
+}
+
+.genimage-range-table__row input {
+  min-width: 0;
+}
+
+
+.dataset-summary-block--single .dataset-summary-table {
+  min-height: 84px;
+}
+
+.dataset-summary-block--single .dataset-summary-row {
+  min-height: 54px;
+}
+
+
+.genimage-checkbox-grid--full {
+  column-gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  row-gap: 2px;
+}
+
+.genimage-checkbox-grid--shapes {
+  align-items: start;
+}
+
+.genimage-checkbox-grid--full .checkbox-card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  min-height: auto;
+  padding: 0;
+  box-shadow: none;
+}
+
+.genimage-checkbox-grid--full .checkbox-card:hover {
+  background: transparent;
+  border-color: transparent;
+}
+
+
+.section-title--field {
+  margin-bottom: 6px;
+}
+
+.section-title--field label {
+  margin: 0;
+}
+
+.inline-hint {
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+
+.inline-hint--warning {
+  color: #c27820;
+}
+
+.genimage-range-table__row {
+  border-top: 0;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.genimage-range-table__head + .genimage-range-table__row {
+  border-top: 1px solid rgba(201, 216, 228, 0.9);
+}
+
+
+.genimage-subsection {
+  margin-top: 2px;
+}
+
+
+.search-layout {
+  align-items: start;
+}
+
+.search-results-panel {
+  min-height: calc(100vh - 170px);
+}
+
+.search-results-panel__section {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 170px);
+}
+
+.search-sidebar {
+  position: sticky;
+  top: 18px;
+}
+
+.dataset-table-wrap--capped {
+  flex: 1 1 auto;
+  max-height: 520px;
+  overflow: auto;
+}
+
+.dataset-table-wrap--capped table {
+  table-layout: fixed;
+}
+
+.dataset-table-wrap--capped thead th {
+  background: var(--panel);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+
+
+
+.merge-complex-grid {
+  display: grid;
+  gap: 10px 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.merge-complex-grid .field--inline {
+  grid-template-columns: 110px minmax(0, 1fr);
+}
+
+.merge-label-source-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.merge-label-source-row {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 220px);
+}
+
+.merge-label-source-card {
+  min-height: 34px;
+}
+
+
+.blend-auxiliary-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.blend-auxiliary-row {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 104px;
+}
+
+.blend-auxiliary-card {
+  min-height: 34px;
+}
+
+.blend-auxiliary-count {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-align: right;
+}
+
+
+.stft-row {
+  display: grid;
+  gap: 10px 12px;
+}
+
+.stft-row--double {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }

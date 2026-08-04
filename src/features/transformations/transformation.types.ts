@@ -9,7 +9,7 @@ type TransformationInputDataset = Pick<
 >;
 
 export interface DerivedDatasetDraft {
-  role: 'train' | 'validation' | 'test' | 'sampled' | 'selected' | 'simulated';
+  role: 'train' | 'validation' | 'test' | 'sampled' | 'selected' | 'simulated' | 'generated' | 'merged' | 'blended';
   draft_id: string;
   assigned_id: string | null;
   parent_id: string;
@@ -52,6 +52,74 @@ export interface SampleFieldTransformationRecord {
   derived_datasets: DerivedDatasetDraft[];
 }
 
+export interface MergeTransformationRecord {
+  transformation_id: string;
+  operation: 'Merge';
+  status: TransformationStatus;
+  created_at: string;
+  input_datasets: TransformationInputDataset[];
+  merge: {
+    method: 'data_objects' | 'complex';
+    mode: 'attach' | 'reshuffle' | null;
+    input_order: string[];
+    random_seed: number | null;
+    complex_operation: 'add_label' | null;
+    add_label: {
+      primary_dataset_id: string;
+      duplicate_primary_dataset: boolean;
+      label_dataset_ids: string[];
+      association_rule: 'align_by_record_order';
+      label_headings_by_source: Record<string, string>;
+    } | null;
+  };
+  comments: string;
+  derived_dataset_count: number;
+  derived_datasets: DerivedDatasetDraft[];
+}
+
+export interface BlendTransformationRecord {
+  transformation_id: string;
+  operation: 'Blend';
+  status: TransformationStatus;
+  created_at: string;
+  input_datasets: TransformationInputDataset[];
+  blend: {
+    primary_dataset_id: string;
+    auxiliary_dataset_ids: string[];
+    auxiliary_fraction: number;
+    selection_rule: 'random_without_replacement' | 'all_objects';
+    subset_selection_seed: number;
+    assignment_rule: 'random_with_reuse' | 'cyclic_reuse';
+    assignment_seed: number;
+    signal_scaling_rule: 'target_snr';
+    target_snr: number;
+    merge_rule: 'add_signals';
+  };
+  comments: string;
+  derived_dataset_count: number;
+  derived_datasets: DerivedDatasetDraft[];
+}
+
+export interface STFTTransformationRecord {
+  transformation_id: string;
+  operation: 'STFT';
+  status: TransformationStatus;
+  created_at: string;
+  input_datasets: TransformationInputDataset[];
+  stft: {
+    sample_rate: number;
+    fft_size: number;
+    window_length: number;
+    hop_length: number;
+    window_type: 'hann' | 'hamming' | 'rectangular';
+    stored_components: 'complex' | 'magnitude' | 'phase' | 'magnitude_phase';
+    apply_to_labels: boolean;
+  };
+  comments: string;
+  derived_dataset_count: number;
+  derived_datasets: DerivedDatasetDraft[];
+}
+
 export interface SelectTransformationRecord {
   transformation_id: string;
   operation: 'Select';
@@ -84,6 +152,48 @@ export interface SimulatePDETransformationRecord {
     y_step: number | null;
     t_range: [number, number] | null;
     t_step: number | null;
+  };
+  comments: string;
+  derived_dataset_count: number;
+  derived_datasets: DerivedDatasetDraft[];
+}
+
+export interface GenImageTransformationRecord {
+  transformation_id: string;
+  operation: 'GenImage';
+  status: TransformationStatus;
+  created_at: string;
+  input_datasets: TransformationInputDataset[];
+  gen_image: {
+    changed_variables: Array<'shape' | 'scale' | 'size' | 'pos_x' | 'pos_y' | 'rotation' | 'grey'>;
+    fixed_variables: Array<'shape' | 'scale' | 'size' | 'pos_x' | 'pos_y' | 'rotation' | 'grey'>;
+    shape_values: Array<'circle' | 'square' | 'triangle' | 'star' | 'ellipse' | 'pentagon' | 'hexagon' | 'rectangle' | 'cross'>;
+    number_of_images: number;
+    image_size: [number, number];
+    output_format: 'png' | 'jpg';
+    output_folder: string;
+    output_prefix: string;
+    sampling_rule: 'enumerate' | 'random';
+    random_seed: number;
+    file_naming_rule: string;
+    generation_config_id: string;
+    color_type: 'grey';
+    background: 'white';
+    color_background: number;
+    shape_cropping: boolean;
+    shape_overlapping: boolean;
+    scale_levels: number;
+    size_levels: number;
+    pos_x_levels: number;
+    pos_y_levels: number;
+    rotation_levels: number;
+    grey_levels: number;
+    scale_range: [number, number];
+    size_range: [number, number];
+    pos_x_range: [number, number];
+    pos_y_range: [number, number];
+    rotation_range: [number, number];
+    grey_range: [number, number];
   };
   comments: string;
   derived_dataset_count: number;

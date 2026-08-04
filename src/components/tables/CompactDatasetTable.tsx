@@ -86,7 +86,7 @@ export function CompactDatasetTable({
                 </td>
                 <td style={compact ? compactBodyCellStyle : bodyCellStyle}>{dataset.objectCount}</td>
                 <td style={compact ? compactBodyCellStyle : bodyCellStyle}>{getDatasetDataObjectType(dataset)}</td>
-                <td style={compact ? compactBodyCellStyle : bodyCellStyle}>{dataset.metadataSummary}</td>
+                <td style={compact ? { ...compactBodyCellStyle, ...metadataCellStyle } : { ...bodyCellStyle, ...metadataCellStyle }}><span style={metadataPreviewStyle}>{dataset.metadataSummary}</span></td>
                 <td style={compact ? compactBodyCellStyle : bodyCellStyle}>
                   <ReadmePreviewButton content={buildDatasetReadmePreview(dataset)} title={dataset.name} />
                 </td>
@@ -130,6 +130,21 @@ const compactBodyCellStyle: CSSProperties = {
 
 const nameCellStyle: CSSProperties = {
   minWidth: '180px',
+};
+
+const metadataCellStyle: CSSProperties = {
+  overflow: 'hidden',
+};
+
+const metadataPreviewStyle: CSSProperties = {
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: 3,
+  display: '-webkit-box',
+  lineHeight: 1.35,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'normal',
+  wordBreak: 'break-word',
 };
 
 const nameInputStyle: CSSProperties = {

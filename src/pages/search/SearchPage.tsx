@@ -8,25 +8,17 @@ import { routes } from '../../lib/routes';
 import { getDatasetDataObjectType } from '../../features/datasets/dataObjectType';
 import { loadDatasets } from '../../services/searchService';
 
-const transformationFunctions = [
-  {
-    name: 'Partition',
-    description: 'Create train, validation, and test splits.',
-    enabled: true,
-    action: routes.partition,
-  },
-  {
-    name: 'SampleField',
-    description: 'Sample each selected field dataset into output objects.',
-    enabled: true,
-    action: routes.sampleField,
-  },
-  {
-    name: 'SimulatePDE',
-    description: 'Simulate PDE fields from symbolic and boundary specifications.',
-    enabled: true,
-    action: routes.simulatePDE,
-  },
+interface TransformationFunctionCard {
+  name: string;
+  description: string;
+  enabled: boolean;
+  action?: string;
+  requiresSingleSelection?: boolean;
+  minimumSelection?: number;
+  requiredDataObjectTypes?: string[];
+}
+
+const transformationFunctions: TransformationFunctionCard[] = [
   {
     name: 'Select',
     description: 'Select data objects, variables, or labels from one dataset.',
@@ -35,29 +27,58 @@ const transformationFunctions = [
     requiresSingleSelection: true,
   },
   {
+    name: 'Partition',
+    description: 'Create train, validation, and test splits.',
+    enabled: true,
+    action: routes.partition,
+  },
+  {
     name: 'Merge',
     description: 'Combine similar datasets into one merged dataset.',
+    enabled: true,
+    action: routes.merge,
+  },
+  {
+    name: 'Blend',
+    description: 'Blend primary objects with auxiliary datasets.',
+    enabled: true,
+    action: routes.blend,
+    minimumSelection: 2,
+  },
+  {
+    name: 'STFT',
+    description: 'Convert waveform datasets into STFT representations.',
+    enabled: true,
+    action: routes.stft,
+    requiresSingleSelection: true,
+    requiredDataObjectTypes: ['Audio'],
+  },
+  {
+    name: 'FeaExSpectrogram',
+    description: 'Create model-facing features from STFT or spectrogram data.',
     enabled: false,
   },
   {
-    name: 'Integration',
-    description: 'Fuse heterogeneous datasets into one integrated dataset.',
-    enabled: false,
+    name: 'GenImage',
+    description: 'Generate controlled image datasets from software configs.',
+    enabled: true,
+    action: routes.genImage,
+    requiresSingleSelection: true,
+    requiredDataObjectTypes: ['ImageGenConfig'],
   },
   {
-    name: 'Normalization',
-    description: 'Convert data into a model-ready normalized format.',
-    enabled: false,
+    name: 'SimulatePDE',
+    description: 'Simulate PDE fields from symbolic and boundary specifications.',
+    enabled: true,
+    action: routes.simulatePDE,
+    requiredDataObjectTypes: ['PDESymbolicSpec'],
   },
   {
-    name: 'Reorganization',
-    description: 'Restructure data for a target machine learning method.',
-    enabled: false,
-  },
-  {
-    name: 'Feature Extraction',
-    description: 'Transform raw data into feature representations.',
-    enabled: false,
+    name: 'SampleField',
+    description: 'Sample each selected field dataset into output objects.',
+    enabled: true,
+    action: routes.sampleField,
+    requiredDataObjectTypes: ['Field'],
   },
 ];
 
@@ -156,6 +177,18 @@ export function SearchPage() {
     setVisibleRows((current) => current + SHOW_MORE_STEP);
   }
 
+  function matchesRequiredDataObjectTypes(item: TransformationFunctionCard) {
+    if (!item.requiredDataObjectTypes?.length) {
+      return true;
+    }
+
+    if (selectedDatasets.length === 0) {
+      return false;
+    }
+
+    return selectedDatasets.every((dataset) => item.requiredDataObjectTypes?.includes(getDatasetDataObjectType(dataset)));
+  }
+
   function handleTransformationClick(route?: string) {
     if (!route) {
       return;
@@ -181,9 +214,9 @@ export function SearchPage() {
         }
       />
 
-      <section className="grid grid--search">
-        <div className="panel">
-          <div className="panel__section">
+      <section className="grid grid--search search-layout">
+        <div className="panel search-results-panel">
+          <div className="panel__section search-results-panel__section">
             <div className="section-title">
               <h2>Search Results</h2>
               <span className="muted">Showing {visibleDatasets.length} of {filteredDatasets.length} rows</span>
@@ -239,7 +272,7 @@ export function SearchPage() {
           </div>
         </div>
 
-        <aside className="panel">
+        <aside className="panel search-sidebar">
           <div className="panel__section panel__section--compact">
             <div className="section-title">
               <h2>Selection Summary</h2>
@@ -270,12 +303,17 @@ export function SearchPage() {
             </div>
             <div className="function-grid">
               {transformationFunctions.map((item) => {
-                const disabledBySelection = item.requiresSingleSelection ? selectedDatasets.length !== 1 : selectedDatasets.length === 0;
+                const disabledBySelection = item.requiresSingleSelection
+                  ? selectedDatasets.length !== 1
+                  : item.minimumSelection
+                    ? selectedDatasets.length < item.minimumSelection
+                    : selectedDatasets.length === 0;
+                const disabledByType = !matchesRequiredDataObjectTypes(item);
                 return (
                   <button
                     key={item.name}
                     className="function-card button button--secondary"
-                    disabled={!item.enabled || disabledBySelection}
+                    disabled={!item.enabled || disabledBySelection || disabledByType}
                     onClick={() => handleTransformationClick(item.action)}
                     type="button"
                   >

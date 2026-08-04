@@ -16,30 +16,24 @@ function mergeDatasets() {
     .map(([path, content]) => parseReadmeDataset(path, content))
     .filter((dataset): dataset is DatasetRecord => dataset !== null);
 
-  const parsedNames = new Set(parsed.map((dataset) => dataset.name));
-
-  return [
-    ...parsed.map((dataset) => ({
-      ...(fallbackByName.get(dataset.name) ?? {}),
-      ...dataset,
-      selectMetadata: dataset.selectMetadata ?? fallbackByName.get(dataset.name)?.selectMetadata,
-    })),
-    ...mockDatasets.filter((dataset) => !parsedNames.has(dataset.name)),
-  ];
+  return parsed.map((dataset) => ({
+    ...(findFallbackDataset(dataset.name, dataset.readmeContent ?? '') ?? {}),
+    ...dataset,
+    selectMetadata: dataset.selectMetadata ?? findFallbackDataset(dataset.name, dataset.readmeContent ?? '')?.selectMetadata,
+  }));
 }
 
 function parseReadmeDataset(path: string, content: string): DatasetRecord | null {
-  if (content.includes('## Core Fields')) {
-    return null;
-  }
+  const folderName = basename(path);
+  const readmeName = getField(content, 'Dataset name') || folderName;
+  const fallbackDataset = findFallbackDataset(folderName, content, readmeName);
 
-  const name = getField(content, 'Dataset name') || basename(path);
-  const typeValue = getField(content, 'Type');
-  const dataObjectType = getField(content, 'Data object type');
+  const typeValue = getField(content, 'Type') || fallbackDataset?.type || 'virtual';
+  const dataObjectType = getField(content, 'Data object type') || fallbackDataset?.dataObjectType || fallbackDataset?.modality || 'Dataset object';
   const objectCountValue = getField(content, 'No. of data objects');
-  const metadata = getField(content, 'Metadata') || getField(content, 'Metadata summary');
+  const metadata = getField(content, 'Metadata') || getField(content, 'Metadata summary') || fallbackDataset?.metadataSummary || 'README template not filled yet.';
 
-  if (!name || !typeValue || !metadata || !objectCountValue) {
+  if (!folderName || !typeValue || !metadata) {
     return null;
   }
 
@@ -49,34 +43,101 @@ function parseReadmeDataset(path: string, content: string): DatasetRecord | null
   const inputDatasets = getNestedParameter(content, 'Input datasets');
   const source = generatedBy
     ? `${generatedBy}${inputDatasets ? ` from ${inputDatasets}` : ''}`
-    : 'Local README dataset';
+    : fallbackDataset?.source ?? 'Local README dataset';
 
   return {
-    id: fallbackByName.get(name)?.id ?? buildLocalId(name),
-    name,
-    type: normalizeType(typeValue),
+    id: buildLocalId(folderName),
+    name: folderName,
+    type: normalizeType(String(typeValue)),
     source,
     modality: dataObjectType || 'Dataset object',
     dataObjectType: dataObjectType || undefined,
-    keywordCount: fallbackByName.get(name)?.keywordCount ?? 0,
-    objectCount: parseInteger(objectCountValue) ?? 0,
-    variableCount: variableCount ?? fallbackByName.get(name)?.variableCount ?? 0,
-    labelCount: labelCount ?? fallbackByName.get(name)?.labelCount ?? 0,
+    keywordCount: fallbackDataset?.keywordCount ?? 0,
+    objectCount: parseInteger(objectCountValue) ?? fallbackDataset?.objectCount ?? 0,
+    variableCount: variableCount ?? fallbackDataset?.variableCount ?? 0,
+    labelCount: labelCount ?? fallbackDataset?.labelCount ?? 0,
     metadataSummary: metadata,
     readmeContent: content.trim(),
+    selectMetadata: fallbackDataset?.selectMetadata,
   };
+}
+
+function findFallbackDataset(folderName: string, content: string, readmeName?: string) {
+  return (
+    fallbackByName.get(folderName)
+    ?? (readmeName ? fallbackByName.get(readmeName) : undefined)
+    ?? findDatasetByHeuristic(folderName, content)
+  );
+}
+
+function findDatasetByHeuristic(folderName: string, content: string) {
+  if (folderName === 'LibriSpeechClean360') {
+    return fallbackByName.get('Speech-Clean');
+  }
+
+  if (folderName === 'WHAMNoise') {
+    return fallbackByName.get('Speech-Noise Clips');
+  }
+
+  if (folderName === 'Libri2Mix') {
+    return fallbackByName.get('Speech-Mixed');
+  }
+
+  if (folderName === 'WindFarmABC') {
+    return fallbackByName.get('WindFarmsABC');
+  }
+
+  if (folderName === 'WindFarmABC_sel') {
+    return fallbackByName.get('WindFarmA-Filtered');
+  }
+
+  if (folderName === 'WindFarmABC_sel_sel') {
+    return fallbackByName.get('WindFarmB-Labeled');
+  }
+
+  if (folderName === 'WindFarmABC_sel_sel_1_trn') {
+    return fallbackByName.get('WindFarmB-Labeled-Train');
+  }
+
+  if (folderName === 'WindFarmABC_sel_sel_1_tst') {
+    return fallbackByName.get('WindFarmB-Labeled-Test');
+  }
+
+  if (folderName === 'WindFarmABC_sel_sel_1_val') {
+    return fallbackByName.get('WindFarmB-Labeled-Validate');
+  }
+
+  if (content.includes('speech') || content.includes('WHAM') || content.includes('Libri')) {
+    return fallbackByName.get('Speech-Mixed') ?? fallbackByName.get('Speech-Clean') ?? fallbackByName.get('Speech-Noise Clips');
+  }
+
+  return undefined;
 }
 
 function getField(content: string, label: string) {
   const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = content.match(new RegExp(`^- ${escaped}:\\s*(.*)$`, 'm'));
-  return match?.[1]?.trim() ?? '';
+  const match = content.match(new RegExp(`^- ${escaped}:[\t ]*([^\r\n]*)$`, 'm'));
+  return cleanFieldValue(match?.[1] ?? '');
 }
 
 function getNestedParameter(content: string, label: string) {
   const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const match = content.match(new RegExp(`^\\s+- ${escaped}:\\s*(.*)$`, 'm'));
-  return match?.[1]?.trim() ?? '';
+  const match = content.match(new RegExp(`^\s+- ${escaped}:[\t ]*([^\r\n]*)$`, 'm'));
+  return cleanFieldValue(match?.[1] ?? '');
+}
+
+function cleanFieldValue(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return '';
+  }
+
+  if (/^-[\t ]+[A-Za-z].*:[\t ]*$/.test(trimmed)) {
+    return '';
+  }
+
+  return trimmed;
 }
 
 function normalizeType(value: string): DatasetType {
