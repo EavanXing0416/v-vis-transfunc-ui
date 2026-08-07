@@ -56,7 +56,10 @@ const transformationFunctions: TransformationFunctionCard[] = [
   {
     name: 'FeaExSpectrogram',
     description: 'Create model-facing features from STFT or spectrogram data.',
-    enabled: false,
+    enabled: true,
+    action: routes.feaExSpectrogram,
+    requiresSingleSelection: true,
+    requiredDataObjectTypes: ['STFT'],
   },
   {
     name: 'GenImage',

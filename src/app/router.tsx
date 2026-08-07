@@ -1,5 +1,6 @@
 import { createHashRouter } from 'react-router-dom';
 import { BlendPage } from '../pages/blend/BlendPage';
+import { FeaExSpectrogramPage } from '../pages/feaexspectrogram/FeaExSpectrogramPage';
 import { GenImagePage } from '../pages/genimage/GenImagePage';
 import { MergePage } from '../pages/merge/MergePage';
 import { PartitionPage } from '../pages/partition/PartitionPage';
@@ -17,6 +18,10 @@ export const router = createHashRouter([
   {
     path: '/transform/blend',
     element: <BlendPage />,
+  },
+  {
+    path: '/transform/fea-ex-spectrogram',
+    element: <FeaExSpectrogramPage />,
   },
   {
     path: '/transform/gen-image',

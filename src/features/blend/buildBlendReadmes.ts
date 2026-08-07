@@ -1,5 +1,5 @@
 import type { BlendTransformationRecord } from '../transformations/transformation.types';
-import { buildBlendMetadataSummary, getSelectedAuxiliaryObjectCount } from './blendMetadata';
+import { buildBlendMetadataSummary } from './blendMetadata';
 
 interface ReadmeFile {
   filename: string;
@@ -11,10 +11,6 @@ export function buildBlendReadmes(record: BlendTransformationRecord): ReadmeFile
   const auxiliaryDatasets = record.input_datasets.filter((dataset) => record.blend.auxiliary_dataset_ids.includes(dataset.id));
 
   return record.derived_datasets.map((dataset) => {
-    const selectedAuxiliaryLines = auxiliaryDatasets.length
-      ? auxiliaryDatasets.map((item) => `  - Selected auxiliary objects: ${item.name} = ${getSelectedAuxiliaryObjectCount(item, record.blend.auxiliary_fraction)}`)
-      : ['  - Selected auxiliary objects: n.a.'];
-
     const content = [
       `# ${dataset.name} README`,
       '',
@@ -31,13 +27,9 @@ export function buildBlendReadmes(record: BlendTransformationRecord): ReadmeFile
       `  - Auxiliary datasets: ${auxiliaryDatasets.map((item) => item.name).join(', ') || 'n.a.'}`,
       `  - Noise pool fraction: ${formatPercentage(record.blend.auxiliary_fraction)}`,
       `  - Selection rule: ${formatSelectionRule(record.blend.selection_rule)}`,
-      `  - Subset selection seed: ${record.blend.subset_selection_seed}`,
       `  - Assignment rule: ${formatAssignmentRule(record.blend.assignment_rule)}`,
-      `  - Assignment seed: ${record.blend.assignment_seed}`,
       `  - Signal scaling rule: ${formatSignalScalingRule(record.blend.signal_scaling_rule)}`,
-      `  - Target SNR: ${record.blend.target_snr}`,
       `  - Merge rule: ${formatMergeRule(record.blend.merge_rule)}`,
-      ...selectedAuxiliaryLines,
       '',
       '## User comments:',
       record.comments.trim() || 'n.a.',

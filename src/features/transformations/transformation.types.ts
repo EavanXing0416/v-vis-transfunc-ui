@@ -120,6 +120,23 @@ export interface STFTTransformationRecord {
   derived_datasets: DerivedDatasetDraft[];
 }
 
+export interface FeaExSpectrogramTransformationRecord {
+  transformation_id: string;
+  operation: 'FeaExSpectrogram';
+  status: TransformationStatus;
+  created_at: string;
+  input_datasets: TransformationInputDataset[];
+  fea_ex_spectrogram: {
+    selected_components: 'complex' | 'magnitude' | 'phase' | 'magnitude_phase' | 'real_imaginary';
+    preserve_label_associations: boolean;
+    enable_advanced_extraction: boolean;
+    advanced_instruction: string;
+  };
+  comments: string;
+  derived_dataset_count: number;
+  derived_datasets: DerivedDatasetDraft[];
+}
+
 export interface SelectTransformationRecord {
   transformation_id: string;
   operation: 'Select';
