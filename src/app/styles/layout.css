@@ -669,10 +669,31 @@
 
 .genimage-range-table__head,
 .genimage-range-table__row {
-  grid-template-columns: minmax(0, 1.15fr) repeat(3, minmax(90px, 1fr));
+  column-gap: 14px;
+  grid-template-columns: 72px 108px minmax(0, 1fr);
 }
 
-.genimage-range-table__row input {
+.genimage-range-table__head {
+  padding-bottom: 2px;
+}
+
+.genimage-range-table__row {
+  align-items: start;
+  padding: 4px 8px;
+}
+
+.genimage-range-table__row > span,
+.genimage-range-table__row > select {
+  padding-top: 0;
+}
+
+.genimage-range-table__row > select {
+  justify-self: start;
+  width: 100%;
+}
+
+.genimage-range-table__row input,
+.genimage-range-table__row select {
   min-width: 0;
 }
 
@@ -687,9 +708,9 @@
 
 
 .genimage-checkbox-grid--full {
-  column-gap: 16px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  row-gap: 2px;
+  column-gap: 8px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  row-gap: 0;
 }
 
 .genimage-checkbox-grid--shapes {
@@ -703,6 +724,8 @@
   min-height: auto;
   padding: 0;
   box-shadow: none;
+  column-gap: 6px;
+  grid-template-columns: 14px minmax(0, 1fr);
 }
 
 .genimage-checkbox-grid--full .checkbox-card:hover {
@@ -730,8 +753,8 @@
 
 .genimage-range-table__row {
   border-top: 0;
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-top: 3px;
+  padding-bottom: 3px;
 }
 
 .genimage-range-table__head + .genimage-range-table__row {
@@ -741,6 +764,67 @@
 
 .genimage-subsection {
   margin-top: 2px;
+}
+
+.genimage-inline-config {
+  display: grid;
+  gap: 8px;
+}
+
+.genimage-inline-config--three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.genimage-inline-config--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.genimage-inline-pair {
+  align-items: center;
+  display: grid;
+  gap: 6px;
+  grid-template-columns: auto minmax(0, 1fr);
+  margin: 0;
+}
+
+.genimage-inline-pair span {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.genimage-inline-pair input {
+  min-height: 28px;
+}
+
+.genimage-range-table input,
+.genimage-range-table select,
+.genimage-inline-pair input {
+  font-weight: 400;
+}
+
+.genimage-range-table select {
+  padding-left: 4px;
+}
+
+.genimage-range-table .field {
+  gap: 4px;
+}
+
+.genimage-range-table .field label {
+  font-size: 0.74rem;
+  margin-bottom: 0;
+}
+
+.genimage-range-table .field-row {
+  gap: 8px;
+}
+
+.genimage-range-table .field input,
+.genimage-range-table .field select {
+  min-height: 28px;
+  padding: 4px 8px;
 }
 
 

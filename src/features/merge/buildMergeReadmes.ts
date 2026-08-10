@@ -1,5 +1,6 @@
 import { buildAddLabelMetadataSummary, buildMergeMetadataSummary, getHomogeneousMergeDataObjectType } from './mergeMetadata';
 import type { MergeTransformationRecord } from '../transformations/transformation.types';
+import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
 
 interface ReadmeFile {
   filename: string;
@@ -37,6 +38,8 @@ export function buildMergeReadmes(record: MergeTransformationRecord): ReadmeFile
           '',
           '## Metadata',
           `- Dataset name: ${dataset.name}`,
+        `- Timestamp: ${formatReadmeTimestamp(record.created_at)}`,
+          `- Timestamp: ${formatReadmeTimestamp(record.created_at)}`,
           `- Type: ${capitalize(dataset.type)}`,
           `- Data object type: ${primaryDataset?.dataObjectType ?? primaryDataset?.modality ?? 'Dataset object'}`,
           `- No. of data objects: ${dataset.object_count}`,

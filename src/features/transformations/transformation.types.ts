@@ -184,6 +184,7 @@ export interface GenImageTransformationRecord {
     changed_variables: Array<'shape' | 'scale' | 'size' | 'pos_x' | 'pos_y' | 'rotation' | 'grey'>;
     fixed_variables: Array<'shape' | 'scale' | 'size' | 'pos_x' | 'pos_y' | 'rotation' | 'grey'>;
     shape_values: Array<'circle' | 'square' | 'triangle' | 'star' | 'ellipse' | 'pentagon' | 'hexagon' | 'rectangle' | 'cross'>;
+    fixed_shape_value: 'circle' | 'square' | 'triangle' | 'star' | 'ellipse' | 'pentagon' | 'hexagon' | 'rectangle' | 'cross';
     number_of_images: number;
     image_size: [number, number];
     output_format: 'png' | 'jpg';
@@ -210,6 +211,12 @@ export interface GenImageTransformationRecord {
     pos_y_range: [number, number];
     rotation_range: [number, number];
     grey_range: [number, number];
+    scale_fixed_value: number;
+    size_fixed_value: number;
+    pos_x_fixed_value: number;
+    pos_y_fixed_value: number;
+    rotation_fixed_value: number;
+    grey_fixed_value: number;
   };
   comments: string;
   derived_dataset_count: number;

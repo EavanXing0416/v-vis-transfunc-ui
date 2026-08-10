@@ -1,5 +1,6 @@
 import { getDatasetDataObjectType } from '../datasets/dataObjectType';
 import type { PartitionTransformationRecord } from '../transformations/transformation.types';
+import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
 
 interface ReadmeFile {
   filename: string;
@@ -16,6 +17,7 @@ export function buildPartitionReadmes(record: PartitionTransformationRecord): Re
       '',
       '## Metadata',
       `- Dataset name: ${dataset.name}`,
+      `- Timestamp: ${formatReadmeTimestamp(record.created_at)}`,
       `- Type: ${capitalize(dataset.type)}`,
       `- Data object type: ${getDatasetDataObjectType(parentDataset ?? { name: dataset.name, modality: 'Dataset object', dataObjectType: undefined })}`,
       `- No. of data objects: ${dataset.object_count}`,

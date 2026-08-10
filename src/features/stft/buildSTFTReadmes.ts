@@ -1,5 +1,6 @@
 import type { STFTTransformationRecord } from '../transformations/transformation.types';
 import { buildSTFTMetadataSummary, formatWindowType } from './stftMetadata';
+import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
 
 interface ReadmeFile {
   filename: string;
@@ -16,6 +17,7 @@ export function buildSTFTReadmes(record: STFTTransformationRecord): ReadmeFile[]
       '',
       '## Metadata',
       `- Dataset name: ${dataset.name}`,
+      `- Timestamp: ${formatReadmeTimestamp(record.created_at)}`,
       `- Type: ${capitalize(dataset.type)}`,
       '- Data object type: STFT',
       `- No. of data objects: ${dataset.object_count}`,

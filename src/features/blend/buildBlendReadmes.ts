@@ -1,5 +1,6 @@
 import type { BlendTransformationRecord } from '../transformations/transformation.types';
 import { buildBlendMetadataSummary } from './blendMetadata';
+import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
 
 interface ReadmeFile {
   filename: string;
@@ -16,6 +17,7 @@ export function buildBlendReadmes(record: BlendTransformationRecord): ReadmeFile
       '',
       '## Metadata',
       `- Dataset name: ${dataset.name}`,
+      `- Timestamp: ${formatReadmeTimestamp(record.created_at)}`,
       `- Type: ${capitalize(dataset.type)}`,
       `- Data object type: ${primaryDataset?.dataObjectType ?? primaryDataset?.modality ?? 'Data object'}`,
       `- No. of data objects: ${dataset.object_count}`,

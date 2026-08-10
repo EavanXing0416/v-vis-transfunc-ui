@@ -1,4 +1,5 @@
 import type { SimulatePDETransformationRecord } from '../transformations/transformation.types';
+import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
 
 interface ReadmeFile {
   filename: string;
@@ -13,6 +14,7 @@ export function buildSimulatePDEReadmes(record: SimulatePDETransformationRecord)
       '',
       '## Metadata',
       `- Dataset name: ${dataset.name}`,
+      `- Timestamp: ${formatReadmeTimestamp(record.created_at)}`,
       `- Type: ${capitalize(dataset.type)}`,
       '- Data object type: Field',
       `- No. of data objects: ${dataset.object_count}`,

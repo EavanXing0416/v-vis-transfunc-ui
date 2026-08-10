@@ -1,5 +1,6 @@
 import { getDatasetDataObjectType } from './dataObjectType';
 import type { DatasetRecord } from './dataset.types';
+import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
 
 export function buildDatasetReadmePreview(dataset: DatasetRecord) {
   if (dataset.readmeContent?.trim()) {
@@ -11,6 +12,7 @@ export function buildDatasetReadmePreview(dataset: DatasetRecord) {
     '',
     '## Metadata',
     `- Dataset name: ${dataset.name}`,
+    `- Timestamp: ${formatReadmeTimestamp()}`,
     `- Type: ${capitalize(dataset.type)}`,
     `- Data object type: ${getDatasetDataObjectType(dataset)}`,
     `- No. of data objects: ${dataset.objectCount}`,

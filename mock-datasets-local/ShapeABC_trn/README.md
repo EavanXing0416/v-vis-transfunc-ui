@@ -2,6 +2,7 @@
 
 ## Metadata
 - Dataset name: ShapeABC_trn
+- Timestamp: 2026-08-10 12:33:36 BST
 - Type: Virtual
 - Data object type: Image
 - No. of data objects: 21000

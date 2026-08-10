@@ -2,6 +2,7 @@
 
 ## Metadata
 - Dataset name: 2D-Helmholtz_sim
+- Timestamp: 2026-08-10 12:33:36 BST
 - Type: Virtual
 - Data object type: Field
 - No. of data objects: 1

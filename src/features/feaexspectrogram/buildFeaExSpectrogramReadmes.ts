@@ -1,5 +1,6 @@
 import type { FeaExSpectrogramTransformationRecord } from '../transformations/transformation.types';
 import { buildFeaExSpectrogramMetadataSummary, formatSelectedComponents } from './feaExSpectrogramMetadata';
+import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
 
 interface ReadmeFile {
   filename: string;
@@ -16,6 +17,7 @@ export function buildFeaExSpectrogramReadmes(record: FeaExSpectrogramTransformat
       '',
       '## Metadata',
       `- Dataset name: ${dataset.name}`,
+      `- Timestamp: ${formatReadmeTimestamp(record.created_at)}`,
       `- Type: ${capitalize(dataset.type)}`,
       '- Data object type: STFT / Feature',
       `- No. of data objects: ${dataset.object_count}`,

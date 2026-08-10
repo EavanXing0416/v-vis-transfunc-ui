@@ -190,22 +190,24 @@ function buildDefaultOutputName(datasetName: string) {
 }
 
 function formatOutputMetadata(form: GenImageFormState) {
-  const shapeSentence = form.changedVariables.includes('shape') && form.shapeValues.length
-    ? ` Shapes: ${form.shapeValues.join(', ')}.`
-    : '';
+  const changedVariables = Object.entries(form.variableModes).filter(([, mode]) => mode === 'changed').map(([key]) => key);
+  const fixedVariables = Object.entries(form.variableModes).filter(([, mode]) => mode === 'fixed').map(([key]) => key);
+  const shapeSentence = form.variableModes.shape === 'changed'
+    ? ` Shapes: ${form.changedShapeValues.join(', ') || 'n.a.'}.`
+    : ` Fixed shape: ${form.fixedShapeValue}.`;
 
-  return `Generated image dataset. ${form.numberOfImages} monochrome ${form.imageWidth}x${form.imageHeight} images with white background.${shapeSentence} Changed variables: ${form.changedVariables.join(', ')}. Labels recorded per image: ${formatRecordedLabels(form)}.`;
+  return `Generated image dataset. ${form.numberOfImages} ${form.imageWidth}x${form.imageHeight} images.${shapeSentence} Changed variables: ${changedVariables.join(', ') || 'n.a.'}. Fixed variables: ${fixedVariables.join(', ') || 'n.a.'}. Labels recorded per image: ${formatRecordedLabels(form)}.`;
 }
 
 
 function formatRecordedLabels(form: GenImageFormState) {
   const labels = new Set<string>();
 
-  if (form.changedVariables.includes('shape')) {
+  if (form.variableModes.shape === 'changed') {
     labels.add('shape_label');
   }
 
-  form.changedVariables
+  Object.entries(form.variableModes).filter(([, mode]) => mode === 'changed').map(([key]) => key)
     .filter((value) => value !== 'shape')
     .forEach((value) => labels.add(value));
 

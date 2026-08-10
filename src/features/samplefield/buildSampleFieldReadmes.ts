@@ -1,5 +1,6 @@
 import { getDatasetDataObjectType } from '../datasets/dataObjectType';
 import type { SampleFieldTransformationRecord } from '../transformations/transformation.types';
+import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
 
 interface ReadmeFile {
   filename: string;
@@ -20,6 +21,7 @@ export function buildSampleFieldReadmes(record: SampleFieldTransformationRecord)
       '',
       '## Metadata',
       `- Dataset name: ${dataset.name}`,
+      `- Timestamp: ${formatReadmeTimestamp(record.created_at)}`,
       `- Type: ${capitalize(dataset.type)}`,
       `- Data object type: ${getDatasetDataObjectType(parentDataset ?? { name: dataset.name, modality: 'Field', dataObjectType: 'Field' })}`,
       `- No. of data objects: ${dataset.object_count}`,

@@ -3,16 +3,19 @@ export const GENIMAGE_SHAPES = ['circle', 'square', 'triangle', 'star', 'ellipse
 
 export type GenImageVariable = (typeof GENIMAGE_VARIABLES)[number];
 export type GenImageShape = (typeof GENIMAGE_SHAPES)[number];
+export type GenImageVariableMode = 'changed' | 'fixed';
 
 export interface GenImageRangeConfig {
   min: number;
   max: number;
+  fixedValue: number;
   levels: number;
 }
 
 export interface GenImageFormState {
-  changedVariables: GenImageVariable[];
-  shapeValues: GenImageShape[];
+  variableModes: Record<GenImageVariable, GenImageVariableMode>;
+  changedShapeValues: GenImageShape[];
+  fixedShapeValue: GenImageShape;
   numberOfImages: number;
   imageWidth: number;
   imageHeight: number;
