@@ -116,7 +116,6 @@ export function STFTPage() {
                 <span>{derivedDataset.object_count}</span>
                 <span>STFT</span>
                 <span>{buildSTFTMetadataSummary(dataset, {
-                  storedComponents: form.storedComponents,
                   windowType: form.windowType,
                   fftSize: form.fftSize,
                   windowLength: form.windowLength,

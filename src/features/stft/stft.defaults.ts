@@ -7,7 +7,6 @@ export const defaultSTFTForm: STFTFormState = {
   windowLength: 512,
   hopLength: 128,
   windowType: 'hann',
-  storedComponents: 'magnitude',
   applyToLabels: true,
   comments: '',
 };

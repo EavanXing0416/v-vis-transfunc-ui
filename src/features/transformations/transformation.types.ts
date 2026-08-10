@@ -112,7 +112,6 @@ export interface STFTTransformationRecord {
     window_length: number;
     hop_length: number;
     window_type: 'hann' | 'hamming' | 'rectangular';
-    stored_components: 'complex' | 'magnitude' | 'phase' | 'magnitude_phase';
     apply_to_labels: boolean;
   };
   comments: string;

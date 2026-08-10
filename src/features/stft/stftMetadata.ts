@@ -5,7 +5,6 @@ interface STFTInputLike {
 }
 
 interface STFTFormLike {
-  storedComponents: 'complex' | 'magnitude' | 'phase' | 'magnitude_phase';
   windowType: 'hann' | 'hamming' | 'rectangular';
   fftSize: number;
   windowLength: number;
@@ -23,7 +22,7 @@ export function buildSTFTMetadataSummary(dataset: STFTInputLike | null, form: ST
     ? ` Labels recorded: ${labelHeadings.join(', ')}. ${form.applyToLabels ? 'Labels transformed with the input.' : 'Labels preserved from input dataset.'}`
     : '';
 
-  return `Labelled STFT dataset. ${dataset.objectCount} STFT objects.${labelSummary} Stored components: ${formatStoredComponents(form.storedComponents)}. Window: ${formatWindowType(form.windowType)}. n_fft: ${form.fftSize}, window_length: ${form.windowLength}, hop_length: ${form.hopLength}.`;
+  return `Labelled STFT dataset. ${dataset.objectCount} STFT objects.${labelSummary} Output representation: STFT. Window: ${formatWindowType(form.windowType)}. n_fft: ${form.fftSize}, window_length: ${form.windowLength}, hop_length: ${form.hopLength}.`;
 }
 
 export function extractLabelHeadings(metadata: string) {
@@ -37,20 +36,6 @@ export function extractLabelHeadings(metadata: string) {
     .split(',')
     .map((item) => item.trim())
     .filter(Boolean);
-}
-
-export function formatStoredComponents(value: STFTFormLike['storedComponents']) {
-  switch (value) {
-    case 'complex':
-      return 'complex';
-    case 'phase':
-      return 'phase';
-    case 'magnitude_phase':
-      return 'magnitude + phase';
-    case 'magnitude':
-    default:
-      return 'magnitude';
-  }
 }
 
 export function formatWindowType(value: STFTFormLike['windowType']) {

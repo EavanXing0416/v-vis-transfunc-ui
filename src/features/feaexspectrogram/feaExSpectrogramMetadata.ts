@@ -40,43 +40,8 @@ export function extractLabelHeadings(metadata: string) {
     .filter(Boolean);
 }
 
-export function detectStoredComponents(metadata: string): FeaExSpectrogramComponent {
-  const match = metadata.match(/Stored components:\s*([^.]*)\./i);
-  const value = match?.[1]?.trim().toLowerCase() ?? '';
-
-  if (value === 'complex') {
-    return 'complex';
-  }
-
-  if (value === 'phase') {
-    return 'phase';
-  }
-
-  if (value === 'magnitude + phase') {
-    return 'magnitude_phase';
-  }
-
-  if (value === 'real + imaginary') {
-    return 'real_imaginary';
-  }
-
-  return 'magnitude';
-}
-
-export function getAvailableFeatureComponents(sourceStoredComponents: FeaExSpectrogramComponent) {
-  switch (sourceStoredComponents) {
-    case 'phase':
-      return ['phase'] as FeaExSpectrogramComponent[];
-    case 'magnitude_phase':
-      return ['magnitude', 'phase', 'magnitude_phase'] as FeaExSpectrogramComponent[];
-    case 'complex':
-      return ['complex', 'magnitude', 'phase', 'magnitude_phase', 'real_imaginary'] as FeaExSpectrogramComponent[];
-    case 'real_imaginary':
-      return ['real_imaginary'] as FeaExSpectrogramComponent[];
-    case 'magnitude':
-    default:
-      return ['magnitude'] as FeaExSpectrogramComponent[];
-  }
+export function getAvailableFeatureComponents() {
+  return ['magnitude', 'phase', 'magnitude_phase', 'complex', 'real_imaginary'] as FeaExSpectrogramComponent[];
 }
 
 export function formatSelectedComponents(value: FeaExSpectrogramComponent) {

@@ -28,7 +28,6 @@ export function buildSTFTPayload(
       window_length: form.windowLength,
       hop_length: form.hopLength,
       window_type: form.windowType,
-      stored_components: form.storedComponents,
       apply_to_labels: form.applyToLabels,
     },
     comments: form.comments,

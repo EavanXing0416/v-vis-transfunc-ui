@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { PageHeader } from '../../components/layout/PageHeader';
 import type { DatasetRecord } from '../../features/datasets/dataset.types';
 import { buildDefaultFeaExSpectrogramForm } from '../../features/feaexspectrogram/feaExSpectrogram.defaults';
-import { buildFeaExSpectrogramMetadataSummary, detectStoredComponents, getAvailableFeatureComponents } from '../../features/feaexspectrogram/feaExSpectrogramMetadata';
+import { buildFeaExSpectrogramMetadataSummary, getAvailableFeatureComponents } from '../../features/feaexspectrogram/feaExSpectrogramMetadata';
 import { buildFeaExSpectrogramPayload } from '../../features/feaexspectrogram/buildFeaExSpectrogramPayload';
 import { buildFeaExSpectrogramReadmes } from '../../features/feaexspectrogram/buildFeaExSpectrogramReadmes';
 import type { FeaExSpectrogramFormState } from '../../features/feaexspectrogram/feaExSpectrogram.types';
@@ -37,8 +37,7 @@ export function FeaExSpectrogramPage() {
     setOutputName(`${dataset.name}_fea`);
   }, [dataset]);
 
-  const sourceStoredComponents = useMemo(() => detectStoredComponents(dataset.metadataSummary), [dataset]);
-  const availableComponents = useMemo(() => getAvailableFeatureComponents(sourceStoredComponents), [sourceStoredComponents]);
+  const availableComponents = useMemo(() => getAvailableFeatureComponents(), []);
   const validationMessage = useMemo(() => getFeaExSpectrogramValidationMessage(form), [form]);
   const derivedDataset = useMemo<DerivedDatasetDraft>(() => ({
     role: 'selected',

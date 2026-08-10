@@ -1,5 +1,5 @@
 import type { DatasetRecord } from '../../../features/datasets/dataset.types';
-import { formatStoredComponents, formatWindowType } from '../../../features/stft/stftMetadata';
+import { formatWindowType } from '../../../features/stft/stftMetadata';
 import type { STFTFormState } from '../../../features/stft/stft.types';
 import type { DerivedDatasetDraft } from '../../../features/transformations/transformation.types';
 
@@ -43,15 +43,15 @@ export function STFTReview({ dataset, form, derivedDataset }: STFTReviewProps) {
         <dd>{formatWindowType(form.windowType)}</dd>
       </div>
       <div className="summary-list__row">
-        <dt>Stored components</dt>
-        <dd>{formatStoredComponents(form.storedComponents)}</dd>
+        <dt>Output</dt>
+        <dd>STFT</dd>
       </div>
       <div className="summary-list__row">
         <dt>Label handling</dt>
         <dd>{form.applyToLabels ? 'Transformed with input' : 'Preserved from input'}</dd>
       </div>
       <div className="summary-list__row">
-        <dt>Output</dt>
+        <dt>Dataset name</dt>
         <dd>{dataset.name}_stft</dd>
       </div>
       <div className="summary-list__row summary-list__row--wrap">

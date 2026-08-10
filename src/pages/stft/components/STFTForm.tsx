@@ -56,13 +56,8 @@ export function STFTForm({ form, onChange, validationMessage, labelsAvailable }:
           </select>
         </div>
         <div className="field field--inline">
-          <label htmlFor="stft-stored-components">Stored components</label>
-          <select id="stft-stored-components" onChange={(event) => update('storedComponents', event.target.value as STFTFormState['storedComponents'])} value={form.storedComponents}>
-            <option value="complex">complex</option>
-            <option value="magnitude">magnitude</option>
-            <option value="phase">phase</option>
-            <option value="magnitude_phase">magnitude + phase</option>
-          </select>
+          <label>Output representation</label>
+          <input readOnly type="text" value="STFT" />
         </div>
       </div>
 

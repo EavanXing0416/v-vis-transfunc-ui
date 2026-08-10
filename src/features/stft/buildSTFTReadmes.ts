@@ -1,5 +1,5 @@
 import type { STFTTransformationRecord } from '../transformations/transformation.types';
-import { buildSTFTMetadataSummary, formatStoredComponents, formatWindowType } from './stftMetadata';
+import { buildSTFTMetadataSummary, formatWindowType } from './stftMetadata';
 
 interface ReadmeFile {
   filename: string;
@@ -20,7 +20,6 @@ export function buildSTFTReadmes(record: STFTTransformationRecord): ReadmeFile[]
       '- Data object type: STFT',
       `- No. of data objects: ${dataset.object_count}`,
       `- Metadata: ${buildSTFTMetadataSummary(input, {
-        storedComponents: record.stft.stored_components,
         windowType: record.stft.window_type,
         fftSize: record.stft.fft_size,
         windowLength: record.stft.window_length,
@@ -35,7 +34,7 @@ export function buildSTFTReadmes(record: STFTTransformationRecord): ReadmeFile[]
       `  - Window length: ${record.stft.window_length}`,
       `  - Hop length: ${record.stft.hop_length}`,
       `  - Window type: ${formatWindowType(record.stft.window_type)}`,
-      `  - Stored components: ${formatStoredComponents(record.stft.stored_components)}`,
+      '  - Output representation: STFT',
       `  - Apply STFT to labels: ${record.stft.apply_to_labels ? 'True' : 'False'}`,
       '',
       '## User comments:',

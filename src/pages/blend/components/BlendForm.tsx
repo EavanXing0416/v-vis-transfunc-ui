@@ -1,5 +1,4 @@
 import type { DatasetRecord } from '../../../features/datasets/dataset.types';
-import { getSelectedAuxiliaryObjectCount } from '../../../features/blend/blendMetadata';
 import type { BlendFormState } from '../../../features/blend/blend.types';
 
 interface BlendFormProps {
@@ -25,18 +24,15 @@ export function BlendForm({ datasets, form, onChange, validationMessage }: Blend
     });
   }
 
-  function handleAuxiliaryToggle(datasetId: string) {
-    const auxiliaryDatasetIds = form.auxiliaryDatasetIds.includes(datasetId)
-      ? form.auxiliaryDatasetIds.filter((item) => item !== datasetId)
-      : [...form.auxiliaryDatasetIds, datasetId];
-
+  function handleAuxiliaryChange(datasetId: string) {
     onChange({
       ...form,
-      auxiliaryDatasetIds,
+      auxiliaryDatasetIds: datasetId && datasetId !== form.primaryDatasetId ? [datasetId] : [],
     });
   }
 
   const auxiliaryCandidates = datasets.filter((dataset) => dataset.id !== form.primaryDatasetId);
+  const selectedAuxiliaryId = form.auxiliaryDatasetIds[0] ?? auxiliaryCandidates[0]?.id ?? '';
 
   return (
     <div className="partition-split-layout">
@@ -50,6 +46,17 @@ export function BlendForm({ datasets, form, onChange, validationMessage }: Blend
           </select>
         </div>
 
+        <div className="field field--inline">
+          <label htmlFor="blend-auxiliary">Auxiliary dataset</label>
+          <select id="blend-auxiliary" onChange={(event) => handleAuxiliaryChange(event.target.value)} value={selectedAuxiliaryId}>
+            {auxiliaryCandidates.map((dataset) => (
+              <option key={dataset.id} value={dataset.id}>{dataset.name}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="merge-complex-grid">
         <div className="field field--inline">
           <label htmlFor="blend-fraction">Auxiliary fraction</label>
           <input id="blend-fraction" max="1" min="0.01" onChange={(event) => update('auxiliaryFraction', Number(event.target.value))} step="0.01" type="number" value={form.auxiliaryFraction} />
@@ -98,25 +105,6 @@ export function BlendForm({ datasets, form, onChange, validationMessage }: Blend
           <select id="blend-merge-rule" onChange={(event) => update('mergeRule', event.target.value as BlendFormState['mergeRule'])} value={form.mergeRule}>
             <option value="add_signals">Add signals</option>
           </select>
-        </div>
-      </div>
-
-      <div className="field">
-        <label>Auxiliary datasets</label>
-        <div className="blend-auxiliary-grid">
-          {auxiliaryCandidates.map((dataset) => {
-            const checked = form.auxiliaryDatasetIds.includes(dataset.id);
-            const selectedCount = getSelectedAuxiliaryObjectCount(dataset, form.auxiliaryFraction);
-            return (
-              <div className="blend-auxiliary-row" key={dataset.id}>
-                <label className="checkbox-card blend-auxiliary-card">
-                  <input checked={checked} onChange={() => handleAuxiliaryToggle(dataset.id)} type="checkbox" />
-                  <span>{dataset.name}</span>
-                </label>
-                <span className="blend-auxiliary-count">{checked ? `${selectedCount} selected` : ''}</span>
-              </div>
-            );
-          })}
         </div>
       </div>
 

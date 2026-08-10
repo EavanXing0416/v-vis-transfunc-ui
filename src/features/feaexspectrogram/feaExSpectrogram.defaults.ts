@@ -1,5 +1,5 @@
 import type { DatasetRecord } from '../datasets/dataset.types';
-import { detectStoredComponents, getAvailableFeatureComponents } from './feaExSpectrogramMetadata';
+import { getAvailableFeatureComponents } from './feaExSpectrogramMetadata';
 import type { FeaExSpectrogramFormState } from './feaExSpectrogram.types';
 
 export const defaultFeaExSpectrogramForm: FeaExSpectrogramFormState = {
@@ -15,8 +15,7 @@ export function buildDefaultFeaExSpectrogramForm(dataset?: DatasetRecord): FeaEx
     return defaultFeaExSpectrogramForm;
   }
 
-  const sourceStoredComponents = detectStoredComponents(dataset.metadataSummary);
-  const availableComponents = getAvailableFeatureComponents(sourceStoredComponents);
+  const availableComponents = getAvailableFeatureComponents();
 
   return {
     ...defaultFeaExSpectrogramForm,
