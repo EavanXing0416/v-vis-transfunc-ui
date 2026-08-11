@@ -21,6 +21,7 @@ export function buildSTFTPayload(
       metadataSummary: dataset.metadataSummary,
       modality: dataset.modality,
       dataObjectType: dataset.dataObjectType,
+      selectMetadata: dataset.selectMetadata,
     }],
     stft: {
       sample_rate: form.sampleRate,

@@ -22,6 +22,22 @@ export function getSelectDraftValidationMessage(step: SelectOperationDraft, sche
       return 'The selected label heading has no available values.';
     }
 
+    if (step.labelSelectionMode === 'proportion') {
+      const proportion = Number(step.labelProportion);
+
+      if (!Number.isFinite(proportion) || proportion <= 0 || proportion > 1) {
+        return 'Enter a label proportion greater than 0 and up to 1.';
+      }
+
+      const seed = Number(step.labelRandomSeed);
+
+      if (!Number.isInteger(seed) || seed < 0) {
+        return 'Enter a non-negative integer random seed.';
+      }
+
+      return null;
+    }
+
     if (step.values.length === 0) {
       return 'Select at least one label value.';
     }
@@ -38,7 +54,7 @@ export function getSelectDraftValidationMessage(step: SelectOperationDraft, sche
   }
 
   if (step.values.length === 0 && !step.minValue.trim()) {
-    return 'Select at least one variable or enter a comparison value.';
+    return 'Select at least one column or enter a comparison value.';
   }
 
   return null;

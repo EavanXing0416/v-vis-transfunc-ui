@@ -14,5 +14,12 @@
     - Ratios: (0.80, 0.00, 0.20)
     - Seed: 42
 
+## Select metadata
+- Label headings: NA
+- Label source: NA
+- Label values by heading: NA
+- Column names: NA
+- Column value types: NA
+
 ## User comments:	
 n.a.

@@ -13,5 +13,13 @@
   - Merge method: data_objects
   - Data-object merge mode: attach
   - Input order: ShapeA -> ShapeB -> ShapeC
+
+## Select metadata
+- Label headings: ["shape_label"]
+- Label source: parameter rows
+- Label values by heading: {"shape_label": []}
+- Column names: NA
+- Column value types: NA
+
 ## User comments:
 n.a.

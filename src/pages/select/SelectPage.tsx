@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ReadmePreviewButton } from '../../components/datasets/ReadmePreviewButton';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { buildDatasetReadmePreview } from '../../features/datasets/buildDatasetReadmePreview';
+import { buildSelectOutputSelectMetadata, getSelectColumnNames } from '../../features/datasets/selectMetadata';
 import { getDatasetDataObjectType } from '../../features/datasets/dataObjectType';
 import type { DatasetRecord } from '../../features/datasets/dataset.types';
 import { buildSelectPayload } from '../../features/select/buildSelectPayload';
@@ -211,18 +212,58 @@ export function SelectPage() {
   );
 }
 
+function selectLabelClassesByProportion(classes: Array<{ name: string; count: number }>, proportionValue: string, seedValue: string) {
+  const proportion = Number(proportionValue);
+  const seed = Number(seedValue);
+
+  if (!Number.isFinite(proportion) || proportion <= 0 || !classes.length) {
+    return [];
+  }
+
+  const targetCount = Math.max(1, Math.min(classes.length, Math.round(classes.length * proportion)));
+  const normalizedSeed = Number.isInteger(seed) ? seed : 42;
+
+  const scored = classes.map((item, index) => ({
+    item,
+    score: hashLabelSelection(`${item.name}:${index}`, normalizedSeed),
+  }));
+
+  scored.sort((left, right) => left.score - right.score);
+  return scored.slice(0, targetCount).map((entry) => entry.item);
+}
+
+function hashLabelSelection(value: string, seed: number) {
+  let hash = seed || 42;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 33 + value.charCodeAt(index)) % 2147483647;
+  }
+
+  return hash;
+}
+
 function deriveOutputStats(dataset: DatasetRecord, schema: SelectDatasetSchema, form: SelectFormState) {
   if (form.operations.length === 1) {
     const step = form.operations[0];
 
+    if (!step) {
+      return {
+        objectCount: dataset.objectCount,
+        variableCount: getSelectColumnNames(buildSelectOutputSelectMetadata(dataset, form.operations)).length || dataset.variableCount,
+        labelCount: dataset.labelCount,
+      };
+    }
+
     if (step.scope === 'across' && step.mode === 'labels') {
-      const objectCount = (schema.labelClassesByHeading[step.field] ?? [])
-        .filter((item) => step.values.includes(item.name))
-        .reduce((sum, item) => sum + item.count, 0);
+      const selectedClasses = step.labelSelectionMode === 'proportion'
+        ? selectLabelClassesByProportion(schema.labelClassesByHeading[step.field] ?? [], step.labelProportion, step.labelRandomSeed)
+        : (schema.labelClassesByHeading[step.field] ?? []).filter((item) => step.values.includes(item.name));
+
+      const objectCount = selectedClasses.reduce((sum, item) => sum + item.count, 0);
 
       return {
         objectCount: objectCount || dataset.objectCount,
-        variableCount: dataset.variableCount,
+        variableCount: getSelectColumnNames(buildSelectOutputSelectMetadata(dataset, form.operations)).length || dataset.variableCount,
         labelCount: dataset.labelCount,
       };
     }
@@ -230,7 +271,7 @@ function deriveOutputStats(dataset: DatasetRecord, schema: SelectDatasetSchema, 
 
   return {
     objectCount: dataset.objectCount,
-    variableCount: dataset.variableCount,
+    variableCount: getSelectColumnNames(buildSelectOutputSelectMetadata(dataset, form.operations)).length || dataset.variableCount,
     labelCount: dataset.labelCount,
   };
 }

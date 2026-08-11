@@ -1,10 +1,11 @@
-import type { DatasetLabelClass } from '../datasets/dataset.types';
+import type { DatasetLabelClass, SelectValueType } from '../datasets/dataset.types';
 
 export type SelectScope = 'across' | 'within';
 export type SelectMode = 'labels' | 'variables';
 export type SelectOperator = 'equals' | 'notEquals' | 'in' | 'gt' | 'lt' | 'between';
 export type SelectConnector = 'AND' | 'OR';
-export type VariableValueType = 'categorical' | 'numerical';
+export type VariableValueType = SelectValueType;
+export type LabelSelectionMode = 'values' | 'proportion';
 
 export interface SelectOperationDraft {
   scope: SelectScope;
@@ -15,6 +16,9 @@ export interface SelectOperationDraft {
   minValue: string;
   maxValue: string;
   connectorToNext: SelectConnector;
+  labelSelectionMode: LabelSelectionMode;
+  labelProportion: string;
+  labelRandomSeed: string;
 }
 
 export interface SelectFormState {
@@ -25,8 +29,9 @@ export interface SelectFormState {
 }
 
 export interface SelectDatasetSchema {
-  variableHeadings: string[];
+  columnNames: string[];
   labelHeadings: string[];
   labelClassesByHeading: Record<string, DatasetLabelClass[]>;
-  variableValueTypes?: Record<string, VariableValueType>;
+  labelSource: string;
+  columnValueTypes?: Record<string, VariableValueType>;
 }

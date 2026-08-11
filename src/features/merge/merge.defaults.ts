@@ -18,6 +18,8 @@ export function buildDefaultMergeForm(datasets: DatasetRecord[]): MergeFormState
     mode: 'attach',
     randomSeed: 0,
     complexOperation: 'add_label',
+    schemaHandling: 'union_all_columns',
+    schemaReferenceDatasetId: datasets[0]?.id ?? '',
     primaryDatasetId,
     duplicatePrimaryDataset: datasets.length <= 1,
     labelDatasetIds: [],

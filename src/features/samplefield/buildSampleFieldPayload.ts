@@ -21,6 +21,7 @@ export function buildSampleFieldPayload(
       metadataSummary: dataset.metadataSummary,
       modality: dataset.modality,
       dataObjectType: dataset.dataObjectType,
+      selectMetadata: dataset.selectMetadata,
     })),
     sample_field: {
       random_seed: form.randomSeed,

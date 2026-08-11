@@ -1,6 +1,7 @@
 import type { BlendTransformationRecord } from '../transformations/transformation.types';
 import { buildBlendMetadataSummary } from './blendMetadata';
 import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
+import { appendSelectMetadataBlock } from '../datasets/selectMetadata';
 
 interface ReadmeFile {
   filename: string;
@@ -12,7 +13,7 @@ export function buildBlendReadmes(record: BlendTransformationRecord): ReadmeFile
   const auxiliaryDatasets = record.input_datasets.filter((dataset) => record.blend.auxiliary_dataset_ids.includes(dataset.id));
 
   return record.derived_datasets.map((dataset) => {
-    const content = [
+    const content = appendSelectMetadataBlock([
       `# ${dataset.name} README`,
       '',
       '## Metadata',
@@ -36,7 +37,7 @@ export function buildBlendReadmes(record: BlendTransformationRecord): ReadmeFile
       '## User comments:',
       record.comments.trim() || 'n.a.',
       '',
-    ].join('\n');
+    ].join('\n'), primaryDataset?.selectMetadata);
 
     return {
       filename: `${dataset.name}_README.md`,

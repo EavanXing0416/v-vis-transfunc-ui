@@ -1,5 +1,6 @@
 import type { ChangeEvent } from 'react';
 import type { DatasetRecord } from '../../../features/datasets/dataset.types';
+import { isTabularMerge } from '../../../features/merge/mergeMetadata';
 import type { MergeFormState } from '../../../features/merge/merge.types';
 
 interface MergeFormProps {
@@ -63,6 +64,7 @@ export function MergeForm({ datasets, form, onChange, validationMessage }: Merge
   }
 
   const labelCandidates = datasets.filter((dataset) => dataset.id !== form.primaryDatasetId);
+  const showTabularSchema = form.mergeMethod === 'data_objects' && isTabularMerge(datasets);
 
   return (
     <div className="partition-split-layout">
@@ -70,14 +72,14 @@ export function MergeForm({ datasets, form, onChange, validationMessage }: Merge
         <div className="field field--inline">
           <label htmlFor="merge-method">Operation</label>
           <select id="merge-method" onChange={handleMethodChange} value={form.mergeMethod}>
-            <option value="data_objects">Data objects</option>
-            <option value="complex">Complex</option>
+            <option value="data_objects">Merge selected data objects</option>
+            <option value="complex">Add labels from selected datasets</option>
           </select>
         </div>
 
         {form.mergeMethod === 'data_objects' ? (
           <div className="field field--inline">
-            <label htmlFor="merge-mode">Data-object mode</label>
+            <label htmlFor="merge-mode">Order mode</label>
             <select id="merge-mode" onChange={(event) => update('mode', event.target.value as MergeFormState['mode'])} value={form.mode}>
               <option value="attach">Attach</option>
               <option value="reshuffle">Reshuffle</option>
@@ -110,6 +112,38 @@ export function MergeForm({ datasets, form, onChange, validationMessage }: Merge
           </div>
         )}
       </div>
+
+      {showTabularSchema ? (
+        <div className="merge-complex-grid">
+          <div className="field field--inline">
+            <label htmlFor="merge-schema-handling">Schema handling</label>
+            <select
+              id="merge-schema-handling"
+              onChange={(event) => update('schemaHandling', event.target.value as MergeFormState['schemaHandling'])}
+              value={form.schemaHandling}
+            >
+              <option value="union_all_columns">Keep all columns</option>
+              <option value="intersect_common_columns">Keep common columns</option>
+              <option value="reference_dataset_with_na_fill">Reference schema + NA fill</option>
+            </select>
+          </div>
+
+          {form.schemaHandling === 'reference_dataset_with_na_fill' ? (
+            <div className="field field--inline">
+              <label htmlFor="merge-schema-reference">Reference dataset</label>
+              <select
+                id="merge-schema-reference"
+                onChange={(event) => update('schemaReferenceDatasetId', event.target.value)}
+                value={form.schemaReferenceDatasetId}
+              >
+                {datasets.map((dataset) => (
+                  <option key={dataset.id} value={dataset.id}>{dataset.name}</option>
+                ))}
+              </select>
+            </div>
+          ) : <div />}
+        </div>
+      ) : null}
 
       {form.mergeMethod === 'complex' ? (
         <div className="field">

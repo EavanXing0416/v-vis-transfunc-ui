@@ -22,9 +22,20 @@ export function getHomogeneousMergeDataObjectType(inputs: MergeInputLike[]) {
   return getDatasetDataObjectType(inputs[0]);
 }
 
-export function buildMergeMetadataSummary(inputs: MergeInputLike[], totalObjects: number, mode: 'attach' | 'reshuffle') {
+export function isTabularMerge(inputs: MergeInputLike[]) {
+  const objectType = getHomogeneousMergeDataObjectType(inputs);
+  return objectType?.trim().toLowerCase() === 'tabular';
+}
+
+export function buildMergeMetadataSummary(
+  inputs: MergeInputLike[],
+  totalObjects: number,
+  mode: 'attach' | 'reshuffle',
+  schemaHandling: 'union_all_columns' | 'intersect_common_columns' | 'reference_dataset_with_na_fill',
+  schemaReferenceDatasetName?: string | null,
+) {
   if (!inputs.length) {
-    return `Merged dataset, mode: ${mode}.`;
+    return `Merged dataset, order mode: ${mode}.`;
   }
 
   const objectType = getHomogeneousMergeDataObjectType(inputs);
@@ -32,12 +43,17 @@ export function buildMergeMetadataSummary(inputs: MergeInputLike[], totalObjects
     return buildImageMergeMetadata(inputs, totalObjects, mode);
   }
 
-  const narratives = dedupeSentences(inputs.flatMap((input) => splitMetadataSentences(input.metadataSummary)));
-  if (!narratives.length) {
-    return `Merged dataset, mode: ${mode}.`;
+  if (isTabularMerge(inputs)) {
+    return buildTabularMergeMetadata(inputs, totalObjects, mode, schemaHandling, schemaReferenceDatasetName);
   }
 
-  return `${narratives.join(' ')} Merged dataset, mode: ${mode}.`;
+  const narratives = dedupeSentences(inputs.flatMap((input) => splitMetadataSentences(input.metadataSummary)));
+
+  if (!narratives.length) {
+    return `Merged dataset. Order mode: ${mode}.`;
+  }
+
+  return `${narratives.join('. ')}. Merged dataset. Order mode: ${mode}.`;
 }
 
 export function buildAddLabelMetadataSummary(
@@ -77,7 +93,47 @@ function buildImageMergeMetadata(inputs: MergeInputLike[], totalObjects: number,
   const shapes = Array.from(new Set(inputs.flatMap((input) => extractShapes(input.metadataSummary))));
   const base = `Generated image dataset. ${totalObjects}${imageSize ? ` ${imageSize}` : ''} images.`;
   const shapeText = shapes.length ? ` Shapes: ${shapes.join(', ')}.` : '';
-  return `${base}${shapeText} Merged dataset, mode: ${mode}.`;
+  return `${base}${shapeText} Merged dataset, order mode: ${mode}.`;
+}
+
+function buildTabularMergeMetadata(
+  inputs: MergeInputLike[],
+  totalObjects: number,
+  mode: 'attach' | 'reshuffle',
+  schemaHandling: 'union_all_columns' | 'intersect_common_columns' | 'reference_dataset_with_na_fill',
+  schemaReferenceDatasetName?: string | null,
+) {
+  const sourceCounts = dedupeNumbers(inputs.flatMap((input) => extractCounts(input.metadataSummary, /(\d+)\s+event-CSV columns?/gi)));
+  const labelHeadingCounts = dedupeNumbers(inputs.flatMap((input) => extractCounts(input.metadataSummary, /(\d+)\s+event-list label headings?/gi)));
+
+  const columnSummary = sourceCounts.length
+    ? schemaHandling === 'intersect_common_columns'
+      ? `${sourceCounts.join(', ')} source event-CSV columns reduced to a shared schema`
+      : schemaHandling === 'reference_dataset_with_na_fill'
+        ? `${sourceCounts.join(', ')} source event-CSV columns aligned to the reference schema`
+        : `${sourceCounts.join(', ')} source event-CSV columns merged into one schema`
+    : 'Merged tabular schema';
+
+  const labelSummary = labelHeadingCounts.length
+    ? `${Math.max(...labelHeadingCounts)} inherited event-list label headings`
+    : 'inherited event-list label headings';
+
+  return `Time-series event dataset. Each data object is one event file. ${totalObjects} merged event files. ${columnSummary}. ${labelSummary}. Order mode: ${mode}. Schema handling: ${formatSchemaHandling(schemaHandling, schemaReferenceDatasetName)}.`;
+}
+
+export function formatSchemaHandling(
+  value: 'union_all_columns' | 'intersect_common_columns' | 'reference_dataset_with_na_fill',
+  referenceDatasetName?: string | null,
+) {
+  switch (value) {
+    case 'intersect_common_columns':
+      return 'keep common columns';
+    case 'reference_dataset_with_na_fill':
+      return `use ${referenceDatasetName ?? 'the selected reference dataset'} as the schema reference and fill missing values with NA`;
+    case 'union_all_columns':
+    default:
+      return 'keep all columns';
+  }
 }
 
 function formatCountText(count: number, objectType: string) {
@@ -132,7 +188,7 @@ function splitMetadataSentences(metadata: string) {
     .split('.')
     .map((item) => item.trim())
     .filter(Boolean)
-    .filter((item) => !/^merged dataset, mode:/i.test(item));
+    .filter((item) => !/^merged dataset, /i.test(item));
 }
 
 function dedupeSentences(items: string[]) {
@@ -148,4 +204,12 @@ function dedupeSentences(items: string[]) {
   }
 
   return result;
+}
+
+function extractCounts(metadata: string, pattern: RegExp) {
+  return Array.from(metadata.matchAll(pattern)).map((match) => Number(match[1])).filter((value) => Number.isFinite(value));
+}
+
+function dedupeNumbers(values: number[]) {
+  return Array.from(new Set(values));
 }

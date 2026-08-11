@@ -24,6 +24,7 @@ export function buildGenImagePayload(
       metadataSummary: dataset.metadataSummary,
       modality: dataset.modality,
       dataObjectType: dataset.dataObjectType,
+      selectMetadata: dataset.selectMetadata,
     }],
     gen_image: {
       changed_variables: changedVariables,

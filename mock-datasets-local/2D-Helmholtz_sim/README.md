@@ -18,6 +18,13 @@
     - Dimension 1: xmin = -1, xmax = 1, xstep = 0.01
     - Dimension 2: ymin = -1, ymax = 1, ystep = 0.01
 
+## Select metadata
+- Label headings: NA
+- Label source: NA
+- Label values by heading: NA
+- Column names: NA
+- Column value types: NA
+
 ## User comments:	
 Executes the numerical solver to produce the required data. By integrating the equations, this step generates the spatial data for downstream use.
 solver_method: Finite Difference Method (FDM)

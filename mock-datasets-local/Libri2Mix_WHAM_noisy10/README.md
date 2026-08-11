@@ -18,5 +18,12 @@
   - Signal scaling rule: Target SNR
   - Merge rule: Add signals
 
+## Select metadata
+- Label headings: ["label_1"]
+- Label source: inherited from input dataset
+- Label values by heading: {"label_1": []}
+- Column names: NA
+- Column value types: NA
+
 ## User comments:
 n.a.

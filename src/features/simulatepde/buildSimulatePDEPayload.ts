@@ -21,6 +21,7 @@ export function buildSimulatePDEPayload(
       metadataSummary: dataset.metadataSummary,
       modality: dataset.modality,
       dataObjectType: dataset.dataObjectType,
+      selectMetadata: dataset.selectMetadata,
     })),
     simulate_pde: {
       solver_method: form.solverMethod,

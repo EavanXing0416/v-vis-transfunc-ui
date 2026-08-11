@@ -60,6 +60,10 @@ export function MergePage() {
     () => selectedDatasets.filter((dataset) => form.labelDatasetIds.includes(dataset.id) && dataset.id !== form.primaryDatasetId),
     [selectedDatasets, form.labelDatasetIds, form.primaryDatasetId],
   );
+  const schemaReferenceDataset = useMemo(
+    () => selectedDatasets.find((dataset) => dataset.id === form.schemaReferenceDatasetId) ?? null,
+    [selectedDatasets, form.schemaReferenceDatasetId],
+  );
   const derivedDatasets = useMemo(
     () => buildDerivedDatasets(selectedDatasets, form, outputName, outputType, primaryDataset),
     [selectedDatasets, form, outputName, outputType, primaryDataset],
@@ -89,7 +93,13 @@ export function MergePage() {
 
   const outputMetadata = form.mergeMethod === 'complex'
     ? buildAddLabelMetadataSummary(primaryDataset, labelDatasets, form.duplicatePrimaryDataset, form.labelHeadingsBySource)
-    : buildMergeMetadataSummary(selectedDatasets, derivedDatasets[0]?.object_count ?? 0, form.mode);
+    : buildMergeMetadataSummary(
+        selectedDatasets,
+        derivedDatasets[0]?.object_count ?? 0,
+        form.mode,
+        form.schemaHandling,
+        schemaReferenceDataset?.name,
+      );
 
   return (
     <main className="app-shell">

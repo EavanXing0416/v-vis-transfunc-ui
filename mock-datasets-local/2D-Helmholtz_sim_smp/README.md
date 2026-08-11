@@ -14,5 +14,12 @@
     - No. of data objects: 100
     - No. of samples per objects: 64
 
+## Select metadata
+- Label headings: NA
+- Label source: NA
+- Label values by heading: NA
+- Column names: NA
+- Column value types: NA
+
 ## User comments:	
 n.a.

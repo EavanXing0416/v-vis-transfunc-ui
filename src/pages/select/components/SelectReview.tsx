@@ -29,19 +29,19 @@ export function SelectReview({ dataset, form, outputStats }: SelectReviewProps) 
         <dd>{form.operations.length}</dd>
       </div>
       <div className="summary-list__row summary-list__row--wrap">
-        <dt>Scope summary</dt>
-        <dd className="summary-list__value summary-list__value--wrap">{formatScopeSummary(form)}</dd>
+        <dt>Selection summary</dt>
+        <dd className="summary-list__value summary-list__value--wrap">{formatSelectionSummary(form)}</dd>
       </div>
       <div className="summary-list__row">
         <dt>Output objects</dt>
         <dd>{outputStats.objectCount}</dd>
       </div>
       <div className="summary-list__row">
-        <dt>Variables</dt>
+        <dt>Output columns</dt>
         <dd>{outputStats.variableCount}</dd>
       </div>
       <div className="summary-list__row">
-        <dt>Labels</dt>
+        <dt>Label headings</dt>
         <dd>{outputStats.labelCount}</dd>
       </div>
       <div className="summary-list__row summary-list__row--wrap">
@@ -52,16 +52,18 @@ export function SelectReview({ dataset, form, outputStats }: SelectReviewProps) 
   );
 }
 
-function formatScopeSummary(form: SelectFormState) {
+function formatSelectionSummary(form: SelectFormState) {
   if (form.operations.length === 0) {
     return 'No operations added yet';
   }
 
   return form.operations
     .map((operation, index) => {
-      const base = `${operation.scope === 'across' ? 'Across' : 'Within'} ${operation.field}`;
+      const basis = operation.mode === 'labels'
+        ? (operation.labelSelectionMode === 'proportion' ? `labels:${operation.field}:proportion` : `labels:${operation.field}`)
+        : (!['in', 'notEquals'].includes(operation.operator) ? `column-values:${operation.field}` : 'columns');
       const suffix = index < form.operations.length - 1 ? ` ${operation.connectorToNext}` : '';
-      return `${base}${suffix}`;
+      return `${basis}${suffix}`;
     })
     .join(' ');
 }

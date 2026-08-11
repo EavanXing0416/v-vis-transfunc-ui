@@ -1,4 +1,5 @@
 export type DatasetType = 'physical' | 'virtual';
+export type SelectValueType = 'categorical' | 'numerical' | 'text';
 
 export interface DatasetLabelClass {
   name: string;
@@ -6,9 +7,11 @@ export interface DatasetLabelClass {
 }
 
 export interface DatasetSelectMetadata {
-  variableHeadings: string[];
   labelHeadings: string[];
   labelClassesByHeading: Record<string, DatasetLabelClass[]>;
+  labelSource?: string;
+  columnNames?: string[];
+  columnValueTypes?: Record<string, SelectValueType>;
 }
 
 export interface DatasetRecord {

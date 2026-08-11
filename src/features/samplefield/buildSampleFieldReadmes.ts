@@ -1,6 +1,7 @@
 import { getDatasetDataObjectType } from '../datasets/dataObjectType';
 import type { SampleFieldTransformationRecord } from '../transformations/transformation.types';
 import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
+import { appendSelectMetadataBlock } from '../datasets/selectMetadata';
 
 interface ReadmeFile {
   filename: string;
@@ -16,7 +17,7 @@ export function buildSampleFieldReadmes(record: SampleFieldTransformationRecord)
       record.sample_field.number_of_samples_per_object,
     );
 
-    const content = [
+    const content = appendSelectMetadataBlock([
       `# ${dataset.name} README`,
       '',
       '## Metadata',
@@ -36,7 +37,7 @@ export function buildSampleFieldReadmes(record: SampleFieldTransformationRecord)
       '## User comments:\t',
       userComments,
       '',
-    ].join('\n');
+    ].join('\n'), parentDataset?.selectMetadata);
 
     return {
       filename: `${sanitizeFilename(dataset.name || dataset.draft_id)}-README.md`,

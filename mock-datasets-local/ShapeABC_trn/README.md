@@ -14,5 +14,12 @@
   - Ratios: (0.70, 0.15, 0.15)
   - Seed: 42
 
+## Select metadata
+- Label headings: ["shape_label"]
+- Label source: parameter rows
+- Label values by heading: {"shape_label": []}
+- Column names: NA
+- Column value types: NA
+
 ## User comments:
 n.a.

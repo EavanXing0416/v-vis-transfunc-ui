@@ -1,6 +1,7 @@
 import type { FeaExSpectrogramTransformationRecord } from '../transformations/transformation.types';
 import { buildFeaExSpectrogramMetadataSummary, formatSelectedComponents } from './feaExSpectrogramMetadata';
 import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
+import { appendSelectMetadataBlock } from '../datasets/selectMetadata';
 
 interface ReadmeFile {
   filename: string;
@@ -12,7 +13,7 @@ export function buildFeaExSpectrogramReadmes(record: FeaExSpectrogramTransformat
 
   return record.derived_datasets.map((dataset) => ({
     filename: `${dataset.name}_README.md`,
-    content: [
+    content: appendSelectMetadataBlock([
       `# ${dataset.name} README`,
       '',
       '## Metadata',
@@ -40,7 +41,7 @@ export function buildFeaExSpectrogramReadmes(record: FeaExSpectrogramTransformat
       '## User comments:',
       record.comments.trim() || 'n.a.',
       '',
-    ].join('\n'),
+    ].join('\n'), input?.selectMetadata),
   }));
 }
 

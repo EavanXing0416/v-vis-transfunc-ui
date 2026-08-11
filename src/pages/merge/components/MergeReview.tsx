@@ -1,4 +1,5 @@
 import type { DatasetRecord } from '../../../features/datasets/dataset.types';
+import { formatSchemaHandling, isTabularMerge } from '../../../features/merge/mergeMetadata';
 import type { MergeFormState } from '../../../features/merge/merge.types';
 import type { DerivedDatasetDraft } from '../../../features/transformations/transformation.types';
 
@@ -22,6 +23,7 @@ export function MergeReview({ datasets, derivedDatasets, form, orderedDatasetNam
     ...(form.duplicatePrimaryDataset ? [form.labelHeadingsBySource.duplicate_primary].filter(Boolean) : []),
     ...labelDatasets.map((dataset) => form.labelHeadingsBySource[dataset.id]).filter(Boolean),
   ];
+  const schemaReferenceDataset = datasets.find((dataset) => dataset.id === form.schemaReferenceDatasetId) ?? null;
 
   return (
     <dl className="summary-list">
@@ -34,15 +36,21 @@ export function MergeReview({ datasets, derivedDatasets, form, orderedDatasetNam
         <dd>{datasets.length}</dd>
       </div>
       <div className="summary-list__row">
-        <dt>Merge method</dt>
-        <dd>{form.mergeMethod === 'complex' ? 'Complex' : 'Data objects'}</dd>
+        <dt>Merge action</dt>
+        <dd>{form.mergeMethod === 'complex' ? 'Add labels from selected datasets' : 'Merge selected data objects'}</dd>
       </div>
       {form.mergeMethod === 'data_objects' ? (
         <>
           <div className="summary-list__row">
-            <dt>Mode</dt>
+            <dt>Order mode</dt>
             <dd>{form.mode}</dd>
           </div>
+          {isTabularMerge(datasets) ? (
+            <div className="summary-list__row summary-list__row--wrap">
+              <dt>Schema handling</dt>
+              <dd className="summary-list__value summary-list__value--wrap">{formatSchemaHandling(form.schemaHandling, schemaReferenceDataset?.name)}</dd>
+            </div>
+          ) : null}
           <div className="summary-list__row summary-list__row--wrap">
             <dt>Order</dt>
             <dd className="summary-list__value summary-list__value--wrap">{orderedDatasetNames.join(' -> ')}</dd>

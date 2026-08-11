@@ -1,6 +1,7 @@
 import { getDatasetDataObjectType } from '../datasets/dataObjectType';
 import type { PartitionTransformationRecord } from '../transformations/transformation.types';
 import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
+import { appendSelectMetadataBlock } from '../datasets/selectMetadata';
 
 interface ReadmeFile {
   filename: string;
@@ -12,7 +13,7 @@ export function buildPartitionReadmes(record: PartitionTransformationRecord): Re
     const parentDataset = record.input_datasets.find((input) => input.id === dataset.parent_id);
     const userComments = record.comments.trim() || 'n.a.';
 
-    const content = [
+    const content = appendSelectMetadataBlock([
       `# ${dataset.name} README`,
       '',
       '## Metadata',
@@ -32,7 +33,7 @@ export function buildPartitionReadmes(record: PartitionTransformationRecord): Re
       '## User comments:\t',
       userComments,
       '',
-    ].join('\n');
+    ].join('\n'), parentDataset?.selectMetadata);
 
     return {
       filename: `${sanitizeFilename(dataset.name || dataset.draft_id)}-README.md`,

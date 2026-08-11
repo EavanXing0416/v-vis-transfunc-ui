@@ -1,5 +1,6 @@
 import type { SimulatePDETransformationRecord } from '../transformations/transformation.types';
 import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
+import { appendSelectMetadataBlock } from '../datasets/selectMetadata';
 
 interface ReadmeFile {
   filename: string;
@@ -9,7 +10,7 @@ interface ReadmeFile {
 export function buildSimulatePDEReadmes(record: SimulatePDETransformationRecord): ReadmeFile[] {
   return record.derived_datasets.map((dataset) => {
     const parentDataset = record.input_datasets.find((input) => input.id === dataset.parent_id);
-    const content = [
+    const content = appendSelectMetadataBlock([
       `# ${dataset.name} README`,
       '',
       '## Metadata',
@@ -38,7 +39,7 @@ export function buildSimulatePDEReadmes(record: SimulatePDETransformationRecord)
       '## User comments:\t',
       record.comments.trim() || 'n.a.',
       '',
-    ].join('\n');
+    ].join('\n'), parentDataset?.selectMetadata);
 
     return {
       filename: `${sanitizeFilename(dataset.name || dataset.draft_id)}-README.md`,

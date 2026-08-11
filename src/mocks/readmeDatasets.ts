@@ -1,4 +1,5 @@
 import type { DatasetRecord, DatasetType } from '../features/datasets/dataset.types';
+import { appendSelectMetadataBlock, normalizeSelectMetadata, parseSelectMetadataBlock } from '../features/datasets/selectMetadata';
 import { mockDatasets } from './datasets';
 
 const readmeFiles = import.meta.glob('../../mock-datasets-local/*/README.md', {
@@ -19,7 +20,6 @@ function mergeDatasets() {
   return parsed.map((dataset) => ({
     ...(findFallbackDataset(dataset.name, dataset.readmeContent ?? '') ?? {}),
     ...dataset,
-    selectMetadata: dataset.selectMetadata ?? findFallbackDataset(dataset.name, dataset.readmeContent ?? '')?.selectMetadata,
   }));
 }
 
@@ -32,6 +32,8 @@ function parseReadmeDataset(path: string, content: string): DatasetRecord | null
   const dataObjectType = getField(content, 'Data object type') || fallbackDataset?.dataObjectType || fallbackDataset?.modality || 'Dataset object';
   const objectCountValue = getField(content, 'No. of data objects');
   const metadata = getField(content, 'Metadata') || getField(content, 'Metadata summary') || fallbackDataset?.metadataSummary || 'README template not filled yet.';
+  const parsedSelectMetadata = parseSelectMetadataBlock(content);
+  const selectMetadata = normalizeSelectMetadata(parsedSelectMetadata ?? fallbackDataset?.selectMetadata);
 
   if (!folderName || !typeValue || !metadata) {
     return null;
@@ -54,11 +56,11 @@ function parseReadmeDataset(path: string, content: string): DatasetRecord | null
     dataObjectType: dataObjectType || undefined,
     keywordCount: fallbackDataset?.keywordCount ?? 0,
     objectCount: parseInteger(objectCountValue) ?? fallbackDataset?.objectCount ?? 0,
-    variableCount: variableCount ?? fallbackDataset?.variableCount ?? 0,
-    labelCount: labelCount ?? fallbackDataset?.labelCount ?? 0,
+    variableCount: variableCount ?? fallbackDataset?.variableCount ?? selectMetadata.columnNames?.length ?? 0,
+    labelCount: labelCount ?? fallbackDataset?.labelCount ?? selectMetadata.labelHeadings.length,
     metadataSummary: metadata,
-    readmeContent: content.trim(),
-    selectMetadata: fallbackDataset?.selectMetadata,
+    readmeContent: appendSelectMetadataBlock(content.trim(), selectMetadata),
+    selectMetadata,
   };
 }
 

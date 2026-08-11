@@ -1,10 +1,11 @@
 import { getDatasetDataObjectType } from './dataObjectType';
 import type { DatasetRecord } from './dataset.types';
+import { appendSelectMetadataBlock } from './selectMetadata';
 import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
 
 export function buildDatasetReadmePreview(dataset: DatasetRecord) {
   if (dataset.readmeContent?.trim()) {
-    return dataset.readmeContent;
+    return appendSelectMetadataBlock(dataset.readmeContent, dataset.selectMetadata);
   }
 
   const lines = [
@@ -19,7 +20,7 @@ export function buildDatasetReadmePreview(dataset: DatasetRecord) {
     `- Metadata: ${dataset.metadataSummary}`,
   ];
 
-  return lines.join('\n');
+  return appendSelectMetadataBlock(lines.join('\n'), dataset.selectMetadata);
 }
 
 function capitalize(value: string) {

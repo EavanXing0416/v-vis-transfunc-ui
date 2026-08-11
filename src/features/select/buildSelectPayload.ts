@@ -22,6 +22,7 @@ export function buildSelectPayload(
         metadataSummary: dataset.metadataSummary,
         modality: dataset.modality,
         dataObjectType: dataset.dataObjectType,
+      selectMetadata: dataset.selectMetadata,
       },
     ],
     select: {

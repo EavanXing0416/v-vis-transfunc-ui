@@ -21,5 +21,12 @@
   - Discretization levels: n.a.
   - Labels recorded per image: shape_label
 
+## Select metadata
+- Label headings: ["shape_label"]
+- Label source: parameter rows
+- Label values by heading: {"shape_label": []}
+- Column names: NA
+- Column value types: NA
+
 ## User comments:
 n.a.

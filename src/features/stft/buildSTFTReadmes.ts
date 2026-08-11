@@ -1,6 +1,7 @@
 import type { STFTTransformationRecord } from '../transformations/transformation.types';
 import { buildSTFTMetadataSummary, formatWindowType } from './stftMetadata';
 import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
+import { appendSelectMetadataBlock } from '../datasets/selectMetadata';
 
 interface ReadmeFile {
   filename: string;
@@ -12,7 +13,7 @@ export function buildSTFTReadmes(record: STFTTransformationRecord): ReadmeFile[]
 
   return record.derived_datasets.map((dataset) => ({
     filename: `${dataset.name}_README.md`,
-    content: [
+    content: appendSelectMetadataBlock([
       `# ${dataset.name} README`,
       '',
       '## Metadata',
@@ -42,7 +43,7 @@ export function buildSTFTReadmes(record: STFTTransformationRecord): ReadmeFile[]
       '## User comments:',
       record.comments.trim() || 'n.a.',
       '',
-    ].join('\n'),
+    ].join('\n'), input?.selectMetadata),
   }));
 }
 

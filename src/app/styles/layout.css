@@ -377,8 +377,10 @@
   box-shadow: 0 18px 60px rgba(11, 20, 38, 0.18);
   display: grid;
   gap: 12px;
+  grid-template-rows: auto minmax(0, 1fr);
   max-height: min(80vh, 760px);
   max-width: min(900px, 92vw);
+  overflow: hidden;
   padding: 14px;
   width: 100%;
 }
@@ -398,6 +400,7 @@
   font-size: 0.82rem;
   line-height: 1.45;
   margin: 0;
+  min-height: 0;
   overflow: auto;
   padding: 12px;
   white-space: pre-wrap;

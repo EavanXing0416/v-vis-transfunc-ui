@@ -21,6 +21,7 @@ export function buildFeaExSpectrogramPayload(
       metadataSummary: dataset.metadataSummary,
       modality: dataset.modality,
       dataObjectType: dataset.dataObjectType,
+      selectMetadata: dataset.selectMetadata,
     }],
     fea_ex_spectrogram: {
       selected_components: form.selectedComponents,

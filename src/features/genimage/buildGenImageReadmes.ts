@@ -1,5 +1,6 @@
 import type { GenImageTransformationRecord } from '../transformations/transformation.types';
 import { formatReadmeTimestamp } from '../../lib/readmeTimestamp';
+import { appendSelectMetadataBlock, buildGenImageSelectMetadata } from '../datasets/selectMetadata';
 
 interface ReadmeFile {
   filename: string;
@@ -29,7 +30,7 @@ export function buildGenImageReadmes(record: GenImageTransformationRecord): Read
   return [
     {
       filename: `${sanitizeFilename(dataset.name || dataset.draft_id)}-README.md`,
-      content: [
+      content: appendSelectMetadataBlock([
         `# ${dataset.name} README`,
         '',
         '## Metadata',
@@ -56,7 +57,7 @@ export function buildGenImageReadmes(record: GenImageTransformationRecord): Read
         '## User comments:',
         record.comments.trim() || 'n.a.',
         '',
-      ].join('\n'),
+      ].join('\n'), buildGenImageSelectMetadata(formatRecordedLabels(record).split(', ').filter(Boolean).filter((item) => item !== 'n.a.'))),
     },
   ];
 }

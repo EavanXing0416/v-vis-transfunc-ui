@@ -5,7 +5,7 @@ export type TransformationStatus = 'draft' | 'ready' | 'running' | 'completed';
 
 type TransformationInputDataset = Pick<
   DatasetRecord,
-  'id' | 'name' | 'type' | 'objectCount' | 'metadataSummary' | 'modality' | 'dataObjectType'
+  'id' | 'name' | 'type' | 'objectCount' | 'metadataSummary' | 'modality' | 'dataObjectType' | 'selectMetadata'
 >;
 
 export interface DerivedDatasetDraft {
@@ -61,6 +61,8 @@ export interface MergeTransformationRecord {
   merge: {
     method: 'data_objects' | 'complex';
     mode: 'attach' | 'reshuffle' | null;
+    schema_handling: 'union_all_columns' | 'intersect_common_columns' | 'reference_dataset_with_na_fill' | null;
+    schema_reference_dataset_id: string | null;
     input_order: string[];
     random_seed: number | null;
     complex_operation: 'add_label' | null;

@@ -8,6 +8,13 @@
 - No. of data objects: 1
 - Metadata: Image-generation config. changed_variables=(shape); shape_values=(hexagon, rectangle, cross); fixed_variables=(scale, pos_x, pos_y, rotation, grey); image_size=(64,64); output_format=PNG; color_type=grey; background=white; background_grey=10; shape_cropping=False; shape_overlapping=False; variable_ranges=scale(0.2,0.8),pos_x(0.2,0.8),pos_y(0.2,0.8),rotation(0,180),grey(50,255); discretization_levels=scale(8),pos_x(8),pos_y(4),rotation(2),grey(16); number_of_images=10000; sampling_rule=enumerate; random_seed=42.
 
+## Select metadata
+- Label headings: ["shape_label"]
+- Label source: generation configuration
+- Label values by heading: {"shape_label": []}
+- Column names: NA
+- Column value types: NA
+
 ## User comments:
 - Generation role: Software/config source
 - Purpose: Defines the third controlled generation run for additional shape classes.

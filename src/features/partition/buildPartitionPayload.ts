@@ -21,6 +21,7 @@ export function buildPartitionPayload(
       metadataSummary: dataset.metadataSummary,
       modality: dataset.modality,
       dataObjectType: dataset.dataObjectType,
+      selectMetadata: dataset.selectMetadata,
     })),
     partition: {
       method: form.method,

@@ -6,7 +6,14 @@
 - Type: Physical
 - Data object type: PDESymbolicSpec
 - No. of data objects: 1
-- Metadata: Dataset contains 1 PDE symbolic specification object. 
+- Metadata: Dataset contains 1 PDE symbolic specification object.
+
+## Select metadata
+- Label headings: NA
+- Label source: NA
+- Label values by heading: NA
+- Column names: NA
+- Column value types: NA
 
 ## User comments
 - Description:	

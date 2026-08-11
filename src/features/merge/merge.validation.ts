@@ -1,5 +1,5 @@
 import type { DatasetRecord } from '../datasets/dataset.types';
-import { getHomogeneousMergeDataObjectType } from './mergeMetadata';
+import { getHomogeneousMergeDataObjectType, isTabularMerge } from './mergeMetadata';
 import type { MergeFormState } from './merge.types';
 
 export function getMergeValidationMessage(datasets: DatasetRecord[], form: MergeFormState) {
@@ -18,6 +18,10 @@ export function getMergeValidationMessage(datasets: DatasetRecord[], form: Merge
 
     if (form.mode === 'reshuffle' && !Number.isInteger(form.randomSeed)) {
       return 'Random seed must be an integer.';
+    }
+
+    if (isTabularMerge(datasets) && form.schemaHandling === 'reference_dataset_with_na_fill' && !form.schemaReferenceDatasetId) {
+      return 'Select one reference dataset for schema handling.';
     }
 
     return null;

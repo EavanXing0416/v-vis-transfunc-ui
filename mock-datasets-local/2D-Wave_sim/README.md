@@ -19,6 +19,13 @@
     - Dimension 2: ymin = 0, ymax = 1, ystep = 0.01
     - Temporal Dimension: tmin = 0, tmax = 100, tstep = 1
 
+## Select metadata
+- Label headings: NA
+- Label source: NA
+- Label values by heading: NA
+- Column names: NA
+- Column value types: NA
+
 ## User comments:	
 Executes the computational simulation that translates the foundational mathematical and symbolic definitions of the 2nd-order hyperbolic PDE into a physical wavefield. By integrating the governing equations, domain limits, and Dirichlet boundary conditions, this numerical solver generates the dense, high-fidelity spatio-temporal data required for downstream synthetic data sampling.
 solver_method: Finite Difference Method (FDM)

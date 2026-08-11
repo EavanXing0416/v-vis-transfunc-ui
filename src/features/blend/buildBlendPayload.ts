@@ -21,6 +21,7 @@ export function buildBlendPayload(
       metadataSummary: dataset.metadataSummary,
       modality: dataset.modality,
       dataObjectType: dataset.dataObjectType,
+      selectMetadata: dataset.selectMetadata,
     })),
     blend: {
       primary_dataset_id: form.primaryDatasetId,

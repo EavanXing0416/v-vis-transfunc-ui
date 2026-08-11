@@ -8,5 +8,12 @@
 - No. of data objects: 50800
 - Metadata: Mixed-speech dataset. 50800 audio clips.
 
+## Select metadata
+- Label headings: ["source_pair_id"]
+- Label source: NA
+- Label values by heading: {"source_pair_id": []}
+- Column names: NA
+- Column value types: NA
+
 ## User comments:
 n.a.

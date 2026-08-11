@@ -21,5 +21,12 @@
   - Discretization levels: scale=8, size=8
   - Labels recorded per image: scale, size
 
+## Select metadata
+- Label headings: ["scale", "size"]
+- Label source: parameter rows
+- Label values by heading: {"scale": [], "size": []}
+- Column names: NA
+- Column value types: NA
+
 ## User comments:
 n.a.
