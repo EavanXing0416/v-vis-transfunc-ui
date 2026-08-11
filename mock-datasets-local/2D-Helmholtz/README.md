@@ -15,8 +15,7 @@
 - Column names: NA
 - Column value types: NA
 
-## User comments
-Description:
+## User comments:Description:
 The foundational mathematical setup required to model the system. This defines the physical laws that will be computed during the simulation to produce the spatial field, including the formula Δu(x, y) + u(x, y)[(a_1π)^2 + (a_2π)^2] = 0 and domain limits. 
 
 pde_type: time-independent ,

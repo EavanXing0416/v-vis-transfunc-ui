@@ -15,8 +15,7 @@
 - Column names: NA
 - Column value types: NA
 
-## User comments
-- Description:	
+## User comments:- Description:	
 The foundational mathematical and symbolic specification required to model the partial differential equation (PDE). The 2D wave equation is formulated as an initial value problem. This defines the physical laws and constraints that will be computed during the simulation step over time and space, accounting for each spacial dimension, to produce the dense PDE spatio-temporal field (c1). This invloves defining the governing equations (2nd-order hyperbolic PDE u_tt - c^2 (u_xx + u_yy) = 0 with c = 2), the continuous problem domain ((t,x,y) in [1]^3), and the necessary boundary/initial conditions (homogeneous Dirichlet).
 
 - Governing equation and physical context:
