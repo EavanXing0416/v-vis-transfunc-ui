@@ -6,6 +6,7 @@ interface SelectReviewProps {
   form: SelectFormState;
   outputStats: {
     objectCount: number;
+    objectCountEstimated: boolean;
     variableCount: number;
     labelCount: number;
   };
@@ -34,7 +35,7 @@ export function SelectReview({ dataset, form, outputStats }: SelectReviewProps) 
       </div>
       <div className="summary-list__row">
         <dt>Output objects</dt>
-        <dd>{outputStats.objectCount}</dd>
+        <dd>{formatObjectCount(outputStats.objectCount, outputStats.objectCountEstimated)}</dd>
       </div>
       <div className="summary-list__row">
         <dt>Output columns</dt>
@@ -66,6 +67,14 @@ function formatSelectionSummary(form: SelectFormState) {
       return `${basis}${suffix}`;
     })
     .join(' ');
+}
+
+function formatObjectCount(objectCount: number, isEstimated: boolean) {
+  if (!isEstimated) {
+    return String(objectCount);
+  }
+
+  return `${objectCount} (estimated)`;
 }
 
 function formatCommentPreview(value: string) {

@@ -24,6 +24,13 @@ interface SelectLocationState {
   selectedDatasets?: DatasetRecord[];
 }
 
+interface SelectOutputStats {
+  objectCount: number;
+  objectCountEstimated: boolean;
+  variableCount: number;
+  labelCount: number;
+}
+
 export function SelectPage() {
   const location = useLocation();
   const locationState = location.state as SelectLocationState | null;
@@ -146,7 +153,7 @@ export function SelectPage() {
                   <option value="virtual">virtual</option>
                   <option value="physical">physical</option>
                 </select>
-                <span>{outputStats.objectCount}</span>
+                <span>{formatObjectCount(outputStats)}</span>
                 <span>{getDatasetDataObjectType(dataset)}</span>
                 <span>{formatOutputMetadata(form)}</span>
               </article>
@@ -242,28 +249,42 @@ function hashLabelSelection(value: string, seed: number) {
   return hash;
 }
 
-function deriveOutputStats(dataset: DatasetRecord, schema: SelectDatasetSchema, form: SelectFormState) {
+function deriveOutputStats(dataset: DatasetRecord, schema: SelectDatasetSchema, form: SelectFormState): SelectOutputStats {
+  const variableCount = getSelectColumnNames(buildSelectOutputSelectMetadata(dataset, form.operations)).length || dataset.variableCount;
+
   if (form.operations.length === 1) {
     const step = form.operations[0];
 
     if (!step) {
       return {
         objectCount: dataset.objectCount,
-        variableCount: getSelectColumnNames(buildSelectOutputSelectMetadata(dataset, form.operations)).length || dataset.variableCount,
+        objectCountEstimated: false,
+        variableCount,
         labelCount: dataset.labelCount,
       };
     }
 
     if (step.scope === 'across' && step.mode === 'labels') {
-      const selectedClasses = step.labelSelectionMode === 'proportion'
-        ? selectLabelClassesByProportion(schema.labelClassesByHeading[step.field] ?? [], step.labelProportion, step.labelRandomSeed)
-        : (schema.labelClassesByHeading[step.field] ?? []).filter((item) => step.values.includes(item.name));
+      if (step.labelSelectionMode === 'proportion') {
+        const proportion = Number(step.labelProportion);
+        const normalizedProportion = Number.isFinite(proportion) ? Math.min(1, Math.max(0, proportion)) : 0;
+        const estimatedObjectCount = Math.round(dataset.objectCount * normalizedProportion);
 
+        return {
+          objectCount: estimatedObjectCount,
+          objectCountEstimated: true,
+          variableCount,
+          labelCount: dataset.labelCount,
+        };
+      }
+
+      const selectedClasses = (schema.labelClassesByHeading[step.field] ?? []).filter((item) => step.values.includes(item.name));
       const objectCount = selectedClasses.reduce((sum, item) => sum + item.count, 0);
 
       return {
         objectCount: objectCount || dataset.objectCount,
-        variableCount: getSelectColumnNames(buildSelectOutputSelectMetadata(dataset, form.operations)).length || dataset.variableCount,
+        objectCountEstimated: false,
+        variableCount,
         labelCount: dataset.labelCount,
       };
     }
@@ -271,7 +292,8 @@ function deriveOutputStats(dataset: DatasetRecord, schema: SelectDatasetSchema, 
 
   return {
     objectCount: dataset.objectCount,
-    variableCount: getSelectColumnNames(buildSelectOutputSelectMetadata(dataset, form.operations)).length || dataset.variableCount,
+    objectCountEstimated: false,
+    variableCount,
     labelCount: dataset.labelCount,
   };
 }
@@ -282,4 +304,12 @@ function formatOutputMetadata(form: SelectFormState) {
   }
 
   return `Derived from ${form.operations.length} selection step${form.operations.length === 1 ? '' : 's'}`;
+}
+
+function formatObjectCount(stats: SelectOutputStats) {
+  if (!stats.objectCountEstimated) {
+    return String(stats.objectCount);
+  }
+
+  return `${stats.objectCount} (estimated)`;
 }

@@ -9,7 +9,7 @@ type TransformationInputDataset = Pick<
 >;
 
 export interface DerivedDatasetDraft {
-  role: 'train' | 'validation' | 'test' | 'sampled' | 'selected' | 'simulated' | 'generated' | 'merged' | 'blended';
+  role: 'train' | 'validation' | 'test' | 'sampled' | 'selected' | 'simulated' | 'generated' | 'merged' | 'blended' | 'retrieved';
   draft_id: string;
   assigned_id: string | null;
   parent_id: string;
@@ -115,6 +115,25 @@ export interface STFTTransformationRecord {
     hop_length: number;
     window_type: 'hann' | 'hamming' | 'rectangular';
     apply_to_labels: boolean;
+  };
+  comments: string;
+  derived_dataset_count: number;
+  derived_datasets: DerivedDatasetDraft[];
+}
+
+export interface SigExMASTTransformationRecord {
+  transformation_id: string;
+  operation: 'SigExMAST';
+  status: TransformationStatus;
+  created_at: string;
+  input_datasets: TransformationInputDataset[];
+  sig_ex_mast: {
+    campaign: 'MAST' | 'MAST-U';
+    shot_source: 'input_dataset' | 'input_path' | 'manual';
+    shot_dataset_id: string | null;
+    shot_path: string | null;
+    shot_ids: string[];
+    channels: string[];
   };
   comments: string;
   derived_dataset_count: number;

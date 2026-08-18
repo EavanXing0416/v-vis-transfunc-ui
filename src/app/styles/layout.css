@@ -563,6 +563,9 @@
   .simulatepde-row,
   .genimage-row,
   .stft-row,
+  .sigexmast-row,
+  .sigexmast-channel-grid,
+  .sigexmast-custom-row,
   .select-builder-card-grid,
   .dataset-summary-row,
   .dataset-summary-row--output,
@@ -927,4 +930,70 @@
 
 .stft-row--double {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sigexmast-row {
+  display: grid;
+  gap: 12px;
+}
+
+.sigexmast-row--double {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sigexmast-channel-grid {
+  display: grid;
+  gap: 8px 14px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sigexmast-channel-option {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sigexmast-channel-option input[type="checkbox"] {
+  flex: 0 0 auto;
+  height: 16px;
+  margin: 0;
+  min-height: 16px;
+  min-width: 16px;
+  padding: 0;
+  width: 16px;
+}
+
+.sigexmast-inline-note {
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.sigexmast-custom-row {
+  align-items: end;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.sigexmast-custom-list {
+  display: grid;
+  gap: 6px;
+}
+
+.sigexmast-custom-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sigexmast-custom-tag {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  display: inline-flex;
+  gap: 8px;
+  padding: 5px 10px;
 }

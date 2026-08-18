@@ -20,6 +20,14 @@ interface TransformationFunctionCard {
 
 const transformationFunctions: TransformationFunctionCard[] = [
   {
+    name: 'AlignTS',
+    description: 'Align irregular time-series signals to a common time grid.',
+    enabled: true,
+    action: routes.alignTS,
+    requiresSingleSelection: true,
+    requiredDataObjectTypes: ['TimeSeries'],
+  },
+  {
     name: 'Select',
     description: 'Select data objects, variables, or labels from one dataset.',
     enabled: true,
@@ -68,6 +76,12 @@ const transformationFunctions: TransformationFunctionCard[] = [
     action: routes.genImage,
     requiresSingleSelection: true,
     requiredDataObjectTypes: ['ImageGenConfig'],
+  },
+  {
+    name: 'SigExMAST',
+    description: 'Extract selected MAST shot signals for Fusion workflows.',
+    enabled: true,
+    action: routes.sigExMAST,
   },
   {
     name: 'SimulatePDE',

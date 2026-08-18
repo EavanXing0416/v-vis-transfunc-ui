@@ -1,5 +1,6 @@
 export const routes = {
   search: '/',
+  alignTS: '/transform/align-ts',
   blend: '/transform/blend',
   feaExSpectrogram: '/transform/fea-ex-spectrogram',
   genImage: '/transform/gen-image',
@@ -7,6 +8,7 @@ export const routes = {
   partition: '/transform/partition',
   sampleField: '/transform/sample-field',
   select: '/transform/select',
+  sigExMAST: '/transform/sigex-mast',
   simulatePDE: '/transform/simulate-pde',
   stft: '/transform/stft',
 } as const;

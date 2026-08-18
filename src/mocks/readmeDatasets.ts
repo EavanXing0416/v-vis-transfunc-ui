@@ -31,6 +31,7 @@ function parseReadmeDataset(path: string, content: string): DatasetRecord | null
   const typeValue = getField(content, 'Type') || fallbackDataset?.type || 'virtual';
   const dataObjectType = getField(content, 'Data object type') || fallbackDataset?.dataObjectType || fallbackDataset?.modality || 'Dataset object';
   const objectCountValue = getField(content, 'No. of data objects');
+  const parsedObjectCount = parseInteger(objectCountValue);
   const metadata = getField(content, 'Metadata') || getField(content, 'Metadata summary') || fallbackDataset?.metadataSummary || 'README template not filled yet.';
   const parsedSelectMetadata = parseSelectMetadataBlock(content);
   const selectMetadata = normalizeSelectMetadata(parsedSelectMetadata ?? fallbackDataset?.selectMetadata);
@@ -55,7 +56,9 @@ function parseReadmeDataset(path: string, content: string): DatasetRecord | null
     modality: dataObjectType || 'Dataset object',
     dataObjectType: dataObjectType || undefined,
     keywordCount: fallbackDataset?.keywordCount ?? 0,
-    objectCount: parseInteger(objectCountValue) ?? fallbackDataset?.objectCount ?? 0,
+    objectCount: objectCountValue
+      ? (parsedObjectCount ?? Number.NaN)
+      : (fallbackDataset?.objectCount ?? Number.NaN),
     variableCount: variableCount ?? fallbackDataset?.variableCount ?? selectMetadata.columnNames?.length ?? 0,
     labelCount: labelCount ?? fallbackDataset?.labelCount ?? selectMetadata.labelHeadings.length,
     metadataSummary: metadata,

@@ -1,6 +1,7 @@
 import { ReadmePreviewButton } from '../../../components/datasets/ReadmePreviewButton';
 import { buildDatasetReadmePreview } from '../../../features/datasets/buildDatasetReadmePreview';
 import { getDatasetDataObjectType } from '../../../features/datasets/dataObjectType';
+import { formatObjectCountDisplay } from '../../../lib/objectCount';
 import type { DatasetRecord } from '../../../features/datasets/dataset.types';
 
 interface InputDatasetSummaryProps {
@@ -22,7 +23,7 @@ export function InputDatasetSummary({ datasets }: InputDatasetSummaryProps) {
         <article className="dataset-summary-row dataset-summary-row--with-info" key={dataset.id}>
           <span className="dataset-summary-row__name">{dataset.name}</span>
           <span className="dataset-summary-row__type">{dataset.type}</span>
-          <span>{dataset.objectCount}</span>
+          <span>{formatObjectCountDisplay(dataset.objectCount)}</span>
           <span>{getDatasetDataObjectType(dataset)}</span>
           <span>{dataset.metadataSummary}</span>
           <span className="dataset-summary-row__icon">

@@ -1,4 +1,5 @@
 import { createHashRouter } from 'react-router-dom';
+import { AlignTSPage } from '../pages/alignts/AlignTSPage';
 import { BlendPage } from '../pages/blend/BlendPage';
 import { FeaExSpectrogramPage } from '../pages/feaexspectrogram/FeaExSpectrogramPage';
 import { GenImagePage } from '../pages/genimage/GenImagePage';
@@ -7,6 +8,7 @@ import { PartitionPage } from '../pages/partition/PartitionPage';
 import { SampleFieldPage } from '../pages/samplefield/SampleFieldPage';
 import { SearchPage } from '../pages/search/SearchPage';
 import { SelectPage } from '../pages/select/SelectPage';
+import { SigExMASTPage } from '../pages/sigexmast/SigExMASTPage';
 import { SimulatePDEPage } from '../pages/simulatepde/SimulatePDEPage';
 import { STFTPage } from '../pages/stft/STFTPage';
 
@@ -14,6 +16,10 @@ export const router = createHashRouter([
   {
     path: '/',
     element: <SearchPage />,
+  },
+  {
+    path: '/transform/align-ts',
+    element: <AlignTSPage />,
   },
   {
     path: '/transform/blend',
@@ -42,6 +48,10 @@ export const router = createHashRouter([
   {
     path: '/transform/select',
     element: <SelectPage />,
+  },
+  {
+    path: '/transform/sigex-mast',
+    element: <SigExMASTPage />,
   },
   {
     path: '/transform/simulate-pde',

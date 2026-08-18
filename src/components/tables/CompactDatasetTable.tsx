@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react';
 import { ReadmePreviewButton } from '../datasets/ReadmePreviewButton';
 import { buildDatasetReadmePreview } from '../../features/datasets/buildDatasetReadmePreview';
+import { formatObjectCountDisplay } from '../../lib/objectCount';
 import { getDatasetDataObjectType } from '../../features/datasets/dataObjectType';
 import type { DatasetRecord } from '../../features/datasets/dataset.types';
 
@@ -84,7 +85,7 @@ export function CompactDatasetTable({
                     <option value="physical">physical</option>
                   </select>
                 </td>
-                <td style={compact ? compactBodyCellStyle : bodyCellStyle}>{dataset.objectCount}</td>
+                <td style={compact ? compactBodyCellStyle : bodyCellStyle}>{formatObjectCountDisplay(dataset.objectCount)}</td>
                 <td style={compact ? compactBodyCellStyle : bodyCellStyle}>{getDatasetDataObjectType(dataset)}</td>
                 <td style={compact ? { ...compactBodyCellStyle, ...metadataCellStyle } : { ...bodyCellStyle, ...metadataCellStyle }}><span style={metadataPreviewStyle}>{dataset.metadataSummary}</span></td>
                 <td style={compact ? compactBodyCellStyle : bodyCellStyle}>
