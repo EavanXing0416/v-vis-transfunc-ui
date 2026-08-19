@@ -26,4 +26,3 @@ DomainExact solution	:	u(t,x,y) = sin(3 pi x) sin(4 pi y) cos(10 pi t)  + 0.5 si
 Initial condition	:	u(0,x,y) = sin(3 pi x) sin(4 pi y) + 0.5 sin(6 pi x) sin(8 pi y) , u_t(0,x,y) = 0
 Boundary condition	:	u = 0 on the full boundary of [0,1]^2  (homogeneous Dirichlet)
 
-

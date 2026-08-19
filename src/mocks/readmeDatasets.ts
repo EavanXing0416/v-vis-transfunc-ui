@@ -76,7 +76,7 @@ function findFallbackDataset(folderName: string, content: string, readmeName?: s
 }
 
 function findDatasetByHeuristic(folderName: string, content: string) {
-  if (folderName === 'LibriSpeechClean360') {
+  if (folderName === 'LibriClean') {
     return fallbackByName.get('Speech-Clean');
   }
 

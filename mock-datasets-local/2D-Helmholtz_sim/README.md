@@ -29,4 +29,3 @@
 Executes the numerical solver to produce the required data. By integrating the equations, this step generates the spatial data for downstream use.
 solver_method: Finite Difference Method (FDM)
 
-
