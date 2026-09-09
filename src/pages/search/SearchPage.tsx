@@ -20,6 +20,14 @@ interface TransformationFunctionCard {
 
 const transformationFunctions: TransformationFunctionCard[] = [
   {
+    name: 'CropTS',
+    description: 'Detect the flat-top interval and crop aligned time-series signals.',
+    enabled: true,
+    action: routes.cropTS,
+    requiresSingleSelection: true,
+    requiredDataObjectTypes: ['TimeSeries'],
+  },
+  {
     name: 'AlignTS',
     description: 'Align irregular time-series signals to a common time grid.',
     enabled: true,

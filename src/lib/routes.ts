@@ -2,6 +2,7 @@ export const routes = {
   search: '/',
   alignTS: '/transform/align-ts',
   blend: '/transform/blend',
+  cropTS: '/transform/crop-ts',
   feaExSpectrogram: '/transform/fea-ex-spectrogram',
   genImage: '/transform/gen-image',
   merge: '/transform/merge',

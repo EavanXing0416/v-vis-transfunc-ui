@@ -168,6 +168,17 @@
   grid-template-columns: 110px minmax(0, 220px);
 }
 
+.field--inline-long {
+  align-items: start;
+  grid-template-columns: minmax(170px, 0.42fr) minmax(0, 1fr);
+}
+
+.field-control-stack {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
 .field label {
   font-size: 0.78rem;
   font-weight: 600;

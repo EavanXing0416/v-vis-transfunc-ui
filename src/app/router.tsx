@@ -1,6 +1,7 @@
 import { createHashRouter } from 'react-router-dom';
 import { AlignTSPage } from '../pages/alignts/AlignTSPage';
 import { BlendPage } from '../pages/blend/BlendPage';
+import { CropTSPage } from '../pages/cropts/CropTSPage';
 import { FeaExSpectrogramPage } from '../pages/feaexspectrogram/FeaExSpectrogramPage';
 import { GenImagePage } from '../pages/genimage/GenImagePage';
 import { MergePage } from '../pages/merge/MergePage';
@@ -24,6 +25,10 @@ export const router = createHashRouter([
   {
     path: '/transform/blend',
     element: <BlendPage />,
+  },
+  {
+    path: '/transform/crop-ts',
+    element: <CropTSPage />,
   },
   {
     path: '/transform/fea-ex-spectrogram',
