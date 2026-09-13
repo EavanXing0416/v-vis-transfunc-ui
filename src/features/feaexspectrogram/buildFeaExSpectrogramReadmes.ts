@@ -12,7 +12,7 @@ export function buildFeaExSpectrogramReadmes(record: FeaExSpectrogramTransformat
   const input = record.input_datasets[0];
 
   return record.derived_datasets.map((dataset) => ({
-    filename: `${dataset.name}_README.md`,
+    filename: `${sanitizeFilename(dataset.name || dataset.draft_id)}-README.md`,
     content: appendSelectMetadataBlock([
       `# ${dataset.name} README`,
       '',
@@ -47,4 +47,8 @@ export function buildFeaExSpectrogramReadmes(record: FeaExSpectrogramTransformat
 
 function capitalize(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function sanitizeFilename(value: string) {
+  return value.replace(/[^a-z0-9._-]+/gi, '-');
 }

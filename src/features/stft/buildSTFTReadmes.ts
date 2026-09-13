@@ -12,7 +12,7 @@ export function buildSTFTReadmes(record: STFTTransformationRecord): ReadmeFile[]
   const input = record.input_datasets[0];
 
   return record.derived_datasets.map((dataset) => ({
-    filename: `${dataset.name}_README.md`,
+    filename: `${sanitizeFilename(dataset.name || dataset.draft_id)}-README.md`,
     content: appendSelectMetadataBlock([
       `# ${dataset.name} README`,
       '',
@@ -49,4 +49,8 @@ export function buildSTFTReadmes(record: STFTTransformationRecord): ReadmeFile[]
 
 function capitalize(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function sanitizeFilename(value: string) {
+  return value.replace(/[^a-z0-9._-]+/gi, '-');
 }

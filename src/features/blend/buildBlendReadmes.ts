@@ -40,7 +40,7 @@ export function buildBlendReadmes(record: BlendTransformationRecord): ReadmeFile
     ].join('\n'), primaryDataset?.selectMetadata);
 
     return {
-      filename: `${dataset.name}_README.md`,
+      filename: `${sanitizeFilename(dataset.name || dataset.draft_id)}-README.md`,
       content,
     };
   });
@@ -48,6 +48,10 @@ export function buildBlendReadmes(record: BlendTransformationRecord): ReadmeFile
 
 function capitalize(value: string) {
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function sanitizeFilename(value: string) {
+  return value.replace(/[^a-z0-9._-]+/gi, '-');
 }
 
 function formatPercentage(value: number) {
