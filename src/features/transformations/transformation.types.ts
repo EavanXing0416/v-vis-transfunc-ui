@@ -9,7 +9,7 @@ type TransformationInputDataset = Pick<
 >;
 
 export interface DerivedDatasetDraft {
-  role: 'train' | 'validation' | 'test' | 'sampled' | 'selected' | 'simulated' | 'generated' | 'merged' | 'blended' | 'retrieved';
+  role: 'train' | 'validation' | 'test' | 'sampled' | 'selected' | 'simulated' | 'generated' | 'merged' | 'blended' | 'retrieved' | 'normalized' | 'imputed' | 'labelled' | 'segmented';
   draft_id: string;
   assigned_id: string | null;
   parent_id: string;

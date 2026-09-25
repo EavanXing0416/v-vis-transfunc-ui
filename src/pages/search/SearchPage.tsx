@@ -16,7 +16,28 @@ interface TransformationFunctionCard {
   requiresSingleSelection?: boolean;
   minimumSelection?: number;
   requiredDataObjectTypes?: string[];
+  requiredAnyDataObjectTypes?: string[];
+  allowedDataObjectTypes?: string[];
 }
+
+const TRANSFORMATION_FUNCTION_ORDER: string[] = [
+  'Select',
+  'Partition',
+  'Merge',
+  'Blend',
+  'GenImage',
+  'SimulatePDE',
+  'SampleField',
+  'STFT',
+  'FeaExSpectrogram',
+  'SigExMAST',
+  'AlignTS',
+  'CropTS',
+  'NormTS',
+  'ImputeTS',
+  'AlignLabel',
+  'SegmentTS',
+];
 
 const transformationFunctions: TransformationFunctionCard[] = [
   {
@@ -24,6 +45,38 @@ const transformationFunctions: TransformationFunctionCard[] = [
     description: 'Detect the flat-top interval and crop aligned time-series signals.',
     enabled: true,
     action: routes.cropTS,
+    requiresSingleSelection: true,
+    requiredDataObjectTypes: ['TimeSeries'],
+  },
+  {
+    name: 'NormTS',
+    description: 'Normalize each time-series signal using fitted scaling statistics.',
+    enabled: true,
+    action: routes.normTS,
+    requiresSingleSelection: true,
+    requiredDataObjectTypes: ['TimeSeries'],
+  },
+  {
+    name: 'ImputeTS',
+    description: 'Fill missing values and zero signals with too few valid samples.',
+    enabled: true,
+    action: routes.imputeTS,
+    requiresSingleSelection: true,
+    requiredDataObjectTypes: ['TimeSeries'],
+  },
+  {
+    name: 'AlignLabel',
+    description: 'Align task annotation intervals to each selected TimeSeries shot.',
+    enabled: true,
+    action: routes.alignLabel,
+    requiredAnyDataObjectTypes: ['TimeSeries'],
+    allowedDataObjectTypes: ['TimeSeries', 'EventAnnotation'],
+  },
+  {
+    name: 'SegmentTS',
+    description: 'Create fixed-length sliding windows from labelled time-series shots.',
+    enabled: true,
+    action: routes.segmentTS,
     requiresSingleSelection: true,
     requiredDataObjectTypes: ['TimeSeries'],
   },
@@ -105,7 +158,7 @@ const transformationFunctions: TransformationFunctionCard[] = [
     action: routes.sampleField,
     requiredDataObjectTypes: ['Field'],
   },
-];
+].sort((left, right) => TRANSFORMATION_FUNCTION_ORDER.indexOf(left.name) - TRANSFORMATION_FUNCTION_ORDER.indexOf(right.name));
 
 const INITIAL_VISIBLE_ROWS = 20;
 const SHOW_MORE_STEP = 20;
@@ -203,6 +256,16 @@ export function SearchPage() {
   }
 
   function matchesRequiredDataObjectTypes(item: TransformationFunctionCard) {
+    const selectedTypes = selectedDatasets.map((dataset) => getDatasetDataObjectType(dataset));
+
+    if (item.allowedDataObjectTypes?.length && selectedTypes.some((type) => !item.allowedDataObjectTypes?.includes(type))) {
+      return false;
+    }
+
+    if (item.requiredAnyDataObjectTypes?.length && !selectedTypes.some((type) => item.requiredAnyDataObjectTypes?.includes(type))) {
+      return false;
+    }
+
     if (!item.requiredDataObjectTypes?.length) {
       return true;
     }

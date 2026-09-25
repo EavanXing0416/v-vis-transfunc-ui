@@ -36,7 +36,7 @@ export function buildSimulatePDEReadmes(record: SimulatePDETransformationRecord)
         ? [`  - Temporal Dimension: tmin = ${record.simulate_pde.t_range[0]}, tmax = ${record.simulate_pde.t_range[1]}, tstep = ${record.simulate_pde.t_step}`]
         : []),
       '',
-      '## User comments:\t',
+      '## User comments:',
       record.comments.trim() || 'n.a.',
       '',
     ].join('\n'), parentDataset?.selectMetadata);

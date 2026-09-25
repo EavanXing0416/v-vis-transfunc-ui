@@ -21,8 +21,10 @@ export interface DatasetRecord {
   source: string;
   modality: string;
   dataObjectType?: string;
+  filePath?: string;
   keywordCount: number;
   objectCount: number;
+  itemCount?: number;
   variableCount: number;
   labelCount: number;
   metadataSummary: string;

@@ -2,14 +2,15 @@
 
 ## Metadata
 - Dataset name: Fusion-MAST-Exp
+- Timestamp: 2026-09-24 17:02:06 BST
 - Type: Physical
 - Data object type: TimeSeries
 - No. of data objects: 9700
-- Metadata: MAST experimental shot data. Ragged, independently-clocked diagnostic signals per shot. Typical discharge span: 0-2 s. Default signals: ip, ne, dalpha, sxr_core.
+- Metadata: MAST experimental archive. Approximately 9,700 data objects. Each data object represents one plasma-discharge shot stored as one Zarr file. Each shot contains multiple diagnostic time-series signals at different sampling resolutions. Typical discharge span: 0-2 s. Default signals: ip, ne, dalpha, sxr_core.
 
 ## Select metadata
 - Label headings: n.a.
-- Variable headings: ip, ne, dalpha, sxr_core
+- Variable headings: n.a.
 
 ## User comments:
 MAST Experimental Data

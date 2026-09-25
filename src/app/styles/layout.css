@@ -429,23 +429,23 @@
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   display: grid;
-  gap: 3px;
-  height: 72px;
-  padding: 9px 10px;
+  gap: 2px;
+  height: 60px;
+  padding: 6px 8px;
   text-align: left;
 }
 
 .function-card strong {
   display: block;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   line-height: 1.15;
 }
 
 .function-card span {
   color: var(--muted);
   display: -webkit-box;
-  font-size: 0.75rem;
-  line-height: 1.25;
+  font-size: 0.72rem;
+  line-height: 1.18;
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;

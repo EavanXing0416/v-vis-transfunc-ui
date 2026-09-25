@@ -9,6 +9,7 @@ import { defaultPartitionForm } from '../../features/partition/partition.default
 import { getPartitionValidationMessage } from '../../features/partition/partition.validation';
 import type { DerivedDatasetDraft } from '../../features/transformations/transformation.types';
 import { downloadText } from '../../lib/downloadText';
+import { formatObjectCountDisplay } from '../../lib/objectCount';
 import { routes } from '../../lib/routes';
 import { mockDatasets } from '../../mocks/datasets';
 import { CommentEditor } from './components/CommentEditor';
@@ -127,7 +128,7 @@ export function PartitionPage() {
                       <option value="virtual">virtual</option>
                       <option value="physical">physical</option>
                     </select>
-                    <span>{dataset.object_count}</span>
+                    <span>{formatObjectCountDisplay(dataset.object_count)}</span>
                     <span>{parentDataset ? getDatasetDataObjectType(parentDataset) : 'Dataset object'}</span>
                     <span>{parentDataset?.metadataSummary ?? 'n.a.'}</span>
                   </article>

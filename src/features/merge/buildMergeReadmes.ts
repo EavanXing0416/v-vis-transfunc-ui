@@ -54,7 +54,7 @@ export function buildMergeReadmes(record: MergeTransformationRecord): ReadmeFile
           `  - Association rule: ${record.merge.add_label.association_rule}`,
           `  - Label headings: ${selectedHeadings.join(', ') || 'n.a.'}`,
           '',
-          '## User comments:	',
+          '## User comments:',
           record.comments.trim() || 'n.a.',
           '',
         ].join('\n'), selectMetadata),
@@ -97,7 +97,7 @@ export function buildMergeReadmes(record: MergeTransformationRecord): ReadmeFile
           ? [`  - Input order: ${orderedInputs.map((input) => input.name).join(' -> ')}`]
           : [`  - Seed: ${record.merge.random_seed ?? 0}`]),
         '',
-        '## User comments:	',
+        '## User comments:',
         userComments,
         '',
       ].join('\n'), selectMetadata),

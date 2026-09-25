@@ -2,7 +2,7 @@ import type { DatasetRecord } from '../datasets/dataset.types';
 import type { SigExMASTFormState } from './sigExMAST.types';
 
 export function buildSigExMASTMetadataSummary(form: SigExMASTFormState) {
-  return `Retrieved raw time series. Irregular sampling. Signals: ${form.signals.join(', ')}.`;
+  return `Retrieved raw time series. Irregular sampling. Each data object represents one shot. Signals: ${form.signals.join(", ")}.`;
 }
 
 export function getSigExMASTOutputObjectCount(
@@ -16,7 +16,7 @@ export function getSigExMASTOutputObjectCount(
   }
 
   if (form.shotSource === 'input_dataset') {
-    return shotListDatasets.find((dataset) => dataset.id === form.selectedShotDatasetId)?.objectCount ?? Number.NaN;
+    return shotListDatasets.find((dataset) => dataset.id === form.selectedShotDatasetId)?.itemCount ?? Number.NaN;
   }
 
   return Number.NaN;

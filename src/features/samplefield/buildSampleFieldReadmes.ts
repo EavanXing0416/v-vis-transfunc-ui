@@ -34,7 +34,7 @@ export function buildSampleFieldReadmes(record: SampleFieldTransformationRecord)
       `  - No. of data objects: ${record.sample_field.number_of_data_objects}`,
       `  - No. of samples per objects: ${record.sample_field.number_of_samples_per_object}`,
       '',
-      '## User comments:\t',
+      '## User comments:',
       userComments,
       '',
     ].join('\n'), parentDataset?.selectMetadata);

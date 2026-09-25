@@ -2,14 +2,16 @@
 
 ## Metadata
 - Dataset name: Fusion-Shot-List
+- Timestamp: 2026-09-24 17:02:06 BST
 - Type: Physical
 - Data object type: IntegerList
-- No. of data objects: n.a.
-- Metadata: Shot list derived from event annotations. Each item is a shot number eligible for a specific Fusion training task.
+- No. of data objects: 1
+- No. of items: 46
+- Metadata: ELM task shot list. One CSV file contains a one-dimensional array of 46 shot IDs. These IDs specify the labelled shots used by the workflow.
 
 ## Select metadata
 - Label headings: n.a.
-- Variable headings: shot_id
+- Variable headings: n.a.
 
 ## User comments:
 A2: Shot List

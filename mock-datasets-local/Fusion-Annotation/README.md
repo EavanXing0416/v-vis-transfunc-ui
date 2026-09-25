@@ -2,14 +2,17 @@
 
 ## Metadata
 - Dataset name: Fusion-Annotation
+- Timestamp: 2026-09-24 17:02:06 BST
 - Type: Physical
-- Data object type: Event interval annotations
-- No. of data objects: n.a.
-- Metadata: Human-marked event intervals for Fusion shots. Annotation records define labelled time regions by shot_id, event label, and time_min/time_max.
+- Data object type: EventAnnotation
+- No. of data objects: 1
+- No. of items: 1242
+- File path: data/annotations/elms.json
+- Metadata: ELM task event annotations. One JSON file contains 1242 human-marked event intervals across 46 shots. Each record identifies an ELM event and its time interval within one shot.
 
 ## Select metadata
-- Label headings: event_type, label, created_by
-- Variable headings: shot_id, type, label, time_min, time_max, created_by
+- Label headings: n.a.
+- Variable headings: n.a.
 
 ## User comments:
 A3: Event Annotations
